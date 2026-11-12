@@ -12,8 +12,8 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=2">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,500&family=Noto+Sans+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
@@ -22,58 +22,65 @@
 
 <!-- Announcement bar -->
 <div class="announce">
-  <span>Opening Dec 10, 2026</span><span class="dot">▲</span><span>Houston, TX</span><span class="dot">▲</span><span>100% Organic Matcha</span>
+  <span data-i18n="announce.open">Opening Dec 10, 2026</span><span class="dot">▲</span><span data-i18n="announce.city">Houston, TX</span><span class="dot">▲</span><span data-i18n="announce.organic">100% Organic Matcha</span>
 </div>
 
 <!-- Nav -->
 <header class="nav" id="nav">
   <a href="#top" class="nav-logo" aria-label="Matcha Zen home"><span class="logo" data-logo></span></a>
   <nav class="nav-links" aria-label="Main">
-    <a href="#menu">Menu</a>
-    <a href="#build">Build your cup</a>
-    <a href="#whisk">Whisk it</a>
-    <a href="#cakes">Gelato cakes</a>
-    <a href="#space">The space</a>
-    <a href="#visit">Visit</a>
+    <a href="#menu" data-i18n="nav.menu">Menu</a>
+    <a href="#build" data-i18n="nav.build">Build your cup</a>
+    <a href="#whisk" data-i18n="nav.whisk">Whisk it</a>
+    <a href="#cakes" data-i18n="nav.cakes">Gelato cakes</a>
+    <a href="#tag" data-i18n="nav.tag">Tag &amp; BOGO</a>
+    <a href="#visit" data-i18n="nav.visit">Visit</a>
   </nav>
-  <a href="#visit" class="btn btn-pill nav-cta magnetic">Get the date <span class="arrow">↗</span></a>
-  <button class="nav-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  <div class="nav-right">
+    <div class="lang" role="group" aria-label="Language">
+      <span class="lang-ink" aria-hidden="true"></span>
+      <button data-lang="en" lang="en">EN</button>
+      <button data-lang="zh" lang="zh">中文</button>
+      <button data-lang="es" lang="es">ES</button>
+    </div>
+    <button class="nav-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+  </div>
 </header>
 <div class="mobile-menu" aria-hidden="true">
-  <a href="#menu">Menu</a><a href="#build">Build your cup</a><a href="#whisk">Whisk it</a><a href="#cakes">Gelato cakes</a><a href="#space">The space</a><a href="#visit">Visit</a>
-  <p class="mm-foot">Opening Dec 10, 2026 · Houston, TX</p>
+  <a href="#menu" data-i18n="nav.menu">Menu</a><a href="#build" data-i18n="nav.build">Build your cup</a><a href="#whisk" data-i18n="nav.whisk">Whisk it</a><a href="#cakes" data-i18n="nav.cakes">Gelato cakes</a><a href="#tag" data-i18n="nav.tag">Tag &amp; BOGO</a><a href="#visit" data-i18n="nav.visit">Visit</a>
+  <p class="mm-foot" data-i18n="mm.foot">Opening Dec 10, 2026 · Houston, TX</p>
 </div>
 
 <main id="top">
 
 <!-- HERO -->
 <section class="hero" id="hero">
-  <div class="hero-bg" data-parallax style="background-image:url(assets/img/hero-fields.jpg)"></div>
+  <div class="hero-bg" style="background-image:url(assets/img/hero-fields.jpg)"></div>
   <div class="hero-shade"></div>
 
   <div class="hero-stickers" aria-hidden="true">
-    <figure class="sticker s1" data-depth="18"><img src="assets/img/cheers.jpg" alt=""><figcaption>when matcha meets gelato</figcaption></figure>
+    <figure class="sticker s1" data-depth="18"><img src="assets/img/cheers.jpg" alt=""><figcaption data-i18n="hero.sticker">when matcha meets gelato</figcaption></figure>
     <figure class="sticker s2" data-depth="-14"><img src="assets/img/gelato.jpg" alt=""></figure>
     <figure class="sticker s3" data-depth="10"><img src="assets/img/blue-cake.jpg" alt=""></figure>
     <figure class="sticker s4" data-depth="-22"><img src="assets/img/drink.jpg" alt=""></figure>
   </div>
 
   <div class="hero-inner">
-    <p class="eyebrow hero-eyebrow"><span class="pulse"></span> Coming soon to Houston, TX</p>
+    <p class="eyebrow hero-eyebrow"><span class="pulse"></span> <span data-i18n="hero.eyebrow">Coming soon to Houston, TX</span></p>
     <h1 class="hero-logo"><span class="sr-only">Matcha Zen</span><span class="logo logo-xl" data-logo data-animate></span></h1>
     <p class="hero-cats">
-      <span>Drinks</span><i>▪</i><span>Gelato</span><i>▪</i><span>Gelato Cakes</span><i>▪</i><span>Bakery</span>
+      <span data-i18n="cat.drinks">Drinks</span><i>▪</i><span data-i18n="cat.gelato">Gelato</span><i>▪</i><span data-i18n="cat.cakes">Gelato Cakes</span><i>▪</i><span data-i18n="cat.bakery">Bakery</span>
     </p>
     <div class="countdown" data-countdown aria-live="polite">
-      <div><b data-cd="d">00</b><small>days</small></div>
-      <div><b data-cd="h">00</b><small>hrs</small></div>
-      <div><b data-cd="m">00</b><small>min</small></div>
-      <div><b data-cd="s">00</b><small>sec</small></div>
-      <p class="cd-label">until opening day: Thursday, December 10.</p>
+      <div><b data-cd="d">00</b><small data-i18n="cd.d">days</small></div>
+      <div><b data-cd="h">00</b><small data-i18n="cd.h">hrs</small></div>
+      <div><b data-cd="m">00</b><small data-i18n="cd.m">min</small></div>
+      <div><b data-cd="s">00</b><small data-i18n="cd.s">sec</small></div>
+      <p class="cd-label" data-i18n="cd.label">until opening day: Thursday, December 10.</p>
     </div>
     <div class="hero-ctas">
-      <a href="#build" class="btn btn-light magnetic">Build your cup</a>
-      <a href="#menu" class="btn btn-ghost magnetic">Peek the menu</a>
+      <a href="#build" class="btn btn-light magnetic" data-i18n="hero.cta1">Build your cup</a>
+      <a href="#menu" class="btn btn-ghost magnetic" data-i18n="hero.cta2">Peek the menu</a>
     </div>
   </div>
   <a href="#ritual" class="scroll-cue" aria-label="Scroll down"><span></span></a>
@@ -82,8 +89,8 @@
 <!-- Marquee -->
 <div class="marquee marquee-green" data-marquee>
   <div class="marquee-track">
-    <span>The Ritual of Cha</span><b>▲</b><span>100% Organic Matcha</span><b>▲</b><span>When Matcha Meets Gelato</span><b>▲</b><span>Opening Dec 10</span><b>▲</b><span>Houston, TX</span><b>▲</b>
-    <span>The Ritual of Cha</span><b>▲</b><span>100% Organic Matcha</span><b>▲</b><span>When Matcha Meets Gelato</span><b>▲</b><span>Opening Dec 10</span><b>▲</b><span>Houston, TX</span><b>▲</b>
+    <span data-i18n="m.ritual">The Ritual of Cha</span><b>▲</b><span data-i18n="m.organic">100% Organic Matcha</span><b>▲</b><span data-i18n="m.meets">When Matcha Meets Gelato</span><b>▲</b><span data-i18n="m.open">Opening Dec 10</span><b>▲</b><span data-i18n="m.city">Houston, TX</span><b>▲</b>
+    <span data-i18n="m.ritual">The Ritual of Cha</span><b>▲</b><span data-i18n="m.organic">100% Organic Matcha</span><b>▲</b><span data-i18n="m.meets">When Matcha Meets Gelato</span><b>▲</b><span data-i18n="m.open">Opening Dec 10</span><b>▲</b><span data-i18n="m.city">Houston, TX</span><b>▲</b>
   </div>
 </div>
 
@@ -91,10 +98,10 @@
 <section class="ritual" id="ritual">
   <div class="wrap ritual-grid">
     <div class="ritual-copy">
-      <p class="eyebrow">100% organic matcha. Crafted into a daily ritual.</p>
-      <h2 class="h-lg reveal-words">A modern ritual of calm, craft &amp; quiet green energy.</h2>
-      <p class="lead reveal">From drinks to gelato to cakes and more, every creation begins with one pure green foundation: our matcha. It's a moment worth slowing down for. A sip, a bite, a taste at a time.</p>
-      <p class="signoff reveal">We call this <strong>The Ritual of Cha.</strong></p>
+      <p class="eyebrow" data-i18n="ritual.eyebrow">100% organic matcha. Crafted into a daily ritual.</p>
+      <h2 class="h-lg reveal" data-i18n="ritual.h">A modern ritual of calm, craft &amp; quiet green energy.</h2>
+      <p class="lead reveal" data-i18n="ritual.lead">From drinks to gelato to cakes and more, every creation begins with one pure green foundation: our matcha. It's a moment worth slowing down for. A sip, a bite, a taste at a time.</p>
+      <p class="signoff reveal" data-i18n="ritual.sign">We call this <strong>The Ritual of Cha.</strong></p>
     </div>
     <div class="ritual-media reveal">
       <div class="tilt-card" data-tilt><img src="assets/img/drip.jpg" alt="Matcha dripping into an iced oat latte"></div>
@@ -103,17 +110,40 @@
   </div>
 </section>
 
-<!-- NOT A ... -->
-<section class="nota" id="nota">
-  <div class="nota-bg" style="background-image:url(assets/img/cheers.jpg)"></div>
-  <div class="wrap nota-inner">
-    <p class="eyebrow light">The world's first matcha &amp; gelato lifestyle brand</p>
-    <ul class="nota-list">
-      <li data-strike>Not a tea shop.</li>
-      <li data-strike>Not a dessert shop.</li>
-      <li data-strike>Not a café.</li>
-      <li class="nota-final">A Modern Matcha Ritual House.</li>
-    </ul>
+<!-- RITUAL HOUSE (interactive sky) -->
+<section class="house" id="house">
+  <div class="sky" aria-hidden="true">
+    <span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span><span class="cloud c4"></span><span class="cloud c5"></span><span class="cloud c6"></span><span class="cloud c7"></span>
+  </div>
+  <div class="wrap house-title">
+    <p class="eyebrow light" data-i18n="house.eyebrow">When matcha meets gelato</p>
+    <h2 class="house-h" data-i18n="house.h" data-split>A Modern Matcha Ritual House</h2>
+  </div>
+  <div class="wrap house-grid">
+    <div class="house-copy">
+      <p class="lead light" data-i18n="house.sub">Matcha drinks, gelato, gelato cakes and fresh bakes, all under one roof.</p>
+      <div class="house-cats">
+        <button data-goto-tab="drinks"><b>01</b> <span data-i18n="cat.drinks">Drinks</span> <i>→</i></button>
+        <button data-goto-tab="gelato"><b>02</b> <span data-i18n="cat.gelato">Gelato</span> <i>→</i></button>
+        <button data-goto-tab="cakes"><b>03</b> <span data-i18n="cat.cakes">Gelato Cakes</span> <i>→</i></button>
+        <button data-goto-tab="bakery"><b>04</b> <span data-i18n="cat.bakery">Bakery</span> <i>→</i></button>
+      </div>
+    </div>
+    <div class="house-stage">
+      <div class="house-photo" data-house-photo>
+        <img src="assets/img/cheers.jpg" alt="Two Matcha Zen gelato floats raised against a blue sky" draggable="false">
+        <button class="hot" style="--x:41.5%;--y:33%" data-hot="0" aria-label="Matcha Gelato Float"><span>+</span></button>
+        <button class="hot" style="--x:64%;--y:41%" data-hot="1" aria-label="Vanilla Gelato Float"><span>+</span></button>
+        <div class="cheers-pop" data-cheers aria-live="polite"></div>
+        <div class="hot-card" data-hot-card hidden>
+          <button class="hot-close" data-hot-close aria-label="Close">×</button>
+          <h3 data-hot-title></h3>
+          <p data-hot-desc></p>
+          <button class="btn btn-dark btn-sm" data-hot-build><span data-i18n="hot.build">Build this</span> ↗</button>
+        </div>
+      </div>
+      <p class="clink-hint" data-i18n="house.hint">🥂 Tap the photo to cheers · tap ＋ to see the drink</p>
+    </div>
   </div>
 </section>
 
@@ -121,84 +151,80 @@
 <section class="menu" id="menu">
   <div class="wrap">
     <div class="section-head">
-      <p class="eyebrow">Our menu</p>
-      <h2 class="h-xl">Pick your <em>green</em>.</h2>
-      <p class="muted">Four ways into the ritual. Tap a tab, then tap a cup.</p>
+      <p class="eyebrow" data-i18n="menu.eyebrow">Our menu</p>
+      <h2 class="h-xl" data-i18n="menu.h">Pick your <em>green</em>.</h2>
+      <p class="muted" data-i18n="menu.sub">Four ways into the ritual. Tap a tab, then tap a cup.</p>
     </div>
     <div class="tabs" role="tablist">
       <span class="tab-ink" aria-hidden="true"></span>
-      <button role="tab" class="tab is-active" data-tab="drinks" aria-selected="true">Drinks <small>Daily essentials</small></button>
-      <button role="tab" class="tab" data-tab="gelato" aria-selected="false">Gelato <small>Social sharing</small></button>
-      <button role="tab" class="tab" data-tab="cakes" aria-selected="false">Gelato Cakes <small>Celebration</small></button>
-      <button role="tab" class="tab" data-tab="bakery" aria-selected="false">Bakery <small>Trend-driven</small></button>
+      <button role="tab" class="tab is-active" data-tab="drinks" aria-selected="true" data-i18n="cat.drinks">Drinks</button>
+      <button role="tab" class="tab" data-tab="gelato" aria-selected="false" data-i18n="cat.gelato">Gelato</button>
+      <button role="tab" class="tab" data-tab="cakes" aria-selected="false" data-i18n="cat.cakes">Gelato Cakes</button>
+      <button role="tab" class="tab" data-tab="bakery" aria-selected="false" data-i18n="cat.bakery">Bakery</button>
     </div>
 
     <div class="panel is-active" data-panel="drinks">
       <div class="drinks">
         <div class="drink-shelf" data-drinks></div>
         <aside class="drink-detail" data-drink-detail aria-live="polite">
-          <p class="eyebrow">Signature drink</p>
-          <h3 data-dd-name>Signature Matcha Latte</h3>
+          <p class="eyebrow" data-i18n="dd.eyebrow">Signature drink</p>
+          <h3 data-dd-name></h3>
           <p data-dd-desc></p>
           <div class="dd-tags" data-dd-tags></div>
-          <a href="#build" class="btn btn-dark magnetic">Make it yours ↗</a>
+          <a href="#build" class="btn btn-dark magnetic" data-i18n="dd.cta">Make it yours ↗</a>
         </aside>
       </div>
-      <p class="tiny muted center">Because one cup isn't enough. Discover our signature drinks.</p>
     </div>
 
     <div class="panel" data-panel="gelato">
       <div class="cards">
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/gelato.jpg" alt="Scoop of matcha gelato in a Matcha Zen cup"><h3>Specialty Gelato</h3></div>
-          <div class="card-back"><h3>Specialty Gelato</h3><p>House-churned with 100% organic matcha. Dense, silky, deeply green.</p><span class="chip">Made for discovery</span></div>
+          <div class="card-face"><img src="assets/img/gelato.jpg" alt="Scoop of matcha gelato in a Matcha Zen cup"><h3 data-i18n="g1.t">Specialty Gelato</h3></div>
+          <div class="card-back"><h3 data-i18n="g1.t">Specialty Gelato</h3><p data-i18n="g1.d">House-churned with 100% organic matcha. Dense, silky, deeply green.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/gelato-bowls.jpg" alt="Two loaded gelato bowls with fig, red bean and matcha"><h3>Loaded Gelato Bowls</h3></div>
-          <div class="card-back"><h3>Loaded Gelato Bowls</h3><p>Gelato piled into a crisp waffle cup with fresh fruit and toppings. Built for sharing.</p><span class="chip">Social sharing</span></div>
+          <div class="card-face"><img src="assets/img/gelato-bowls.jpg" alt="Two loaded gelato bowls with fig, red bean and matcha"><h3 data-i18n="g2.t">Loaded Gelato Bowls</h3></div>
+          <div class="card-back"><h3 data-i18n="g2.t">Loaded Gelato Bowls</h3><p data-i18n="g2.d">Gelato piled into a crisp waffle cup with fresh fig, red bean and crunchy toppings.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/cheers.jpg" alt="Two drinks topped with gelato scoops held up to a blue sky"><h3>Gelato Floats</h3></div>
-          <div class="card-back"><h3>Gelato Floats</h3><p>When matcha meets gelato. A scoop on top of your favorite drink. Our signature move.</p><span class="chip">Get a scoop</span></div>
+          <div class="card-face"><img src="assets/img/cheers.jpg" alt="Two drinks topped with gelato scoops held up to a blue sky"><h3 data-i18n="g3.t">Gelato Floats</h3></div>
+          <div class="card-back"><h3 data-i18n="g3.t">Gelato Floats</h3><p data-i18n="g3.d">When matcha meets gelato: a scoop on top of your favorite drink. Our signature move.</p></div>
         </article>
       </div>
-      <p class="tiny muted center">Made for discovery. Made for the next social media post.</p>
     </div>
 
     <div class="panel" data-panel="cakes">
       <div class="cards">
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/cakes.jpg" alt="Velvet gelato cakes in six colors"><h3>The Velvet Collection</h3></div>
-          <div class="card-back"><h3>The Velvet Collection</h3><p>Velvet-finish gelato cakes in core matcha and seasonal colors. Each one stamped with our mark.</p><span class="chip">Made for gifting</span></div>
+          <div class="card-face"><img src="assets/img/cakes.jpg" alt="Velvet gelato cakes in six colors"><h3 data-i18n="c1.t">The Velvet Collection</h3></div>
+          <div class="card-back"><h3 data-i18n="c1.t">The Velvet Collection</h3><p data-i18n="c1.d">Velvet-finish gelato cakes in matcha and seasonal colors, each one stamped with our mark.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/blue-cake.jpg" alt="Blue gelato cake sliced to show matcha gelato center"><h3>Cut-to-Reveal</h3></div>
-          <div class="card-back"><h3>Cut-to-Reveal</h3><p>A bold shell, a matcha gelato heart and a cocoa crumb base. The slice is the moment.</p><span class="chip">Made for celebration</span></div>
+          <div class="card-face"><img src="assets/img/blue-cake.jpg" alt="Blue gelato cake sliced to show matcha gelato center"><h3 data-i18n="c2.t">Cut-to-Reveal</h3></div>
+          <div class="card-back"><h3 data-i18n="c2.t">Cut-to-Reveal</h3><p data-i18n="c2.d">A bold shell, a matcha gelato heart and a cocoa crumb base. The slice is the moment.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/cake-cut.jpg" alt="Matcha gelato cake being sliced"><h3>Matcha Gelato Cake</h3></div>
-          <div class="card-back"><h3>Matcha Gelato Cake</h3><p>All green, all the way through. Get a slice, or take the whole thing home.</p><a class="chip chip-link" href="#cakes">Design yours ↓</a></div>
+          <div class="card-face"><img src="assets/img/cake-cut.jpg" alt="Matcha gelato cake being sliced"><h3 data-i18n="c3.t">Matcha Gelato Cake</h3></div>
+          <div class="card-back"><h3 data-i18n="c3.t">Matcha Gelato Cake</h3><p data-i18n="c3.d">All green, all the way through. Grab a slice or take the whole cake home.</p><a class="chip chip-link" href="#cakes" data-i18n="c3.link">Design yours ↓</a></div>
         </article>
       </div>
-      <p class="tiny muted center">Made for celebration. Made for gifting. Get a slice of premium cakes.</p>
     </div>
 
     <div class="panel" data-panel="bakery">
       <div class="cards">
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/donuts.jpg" alt="Filled donuts dusted with sugar and matcha"><h3>Filled Donuts</h3></div>
-          <div class="card-back"><h3>Filled Donuts</h3><p>Pillowy, dusted and filled, with matcha in the lineup of course.</p><span class="chip">Trend-driven</span></div>
+          <div class="card-face"><img src="assets/img/donuts.jpg" alt="Filled donuts dusted with sugar and matcha"><h3 data-i18n="b1.t">Filled Donuts</h3></div>
+          <div class="card-back"><h3 data-i18n="b1.t">Filled Donuts</h3><p data-i18n="b1.d">Pillowy, sugar-dusted and filled, with matcha in the lineup of course.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/bakery.jpg" alt="Japanese cheesecakes, donuts and a bear-shaped mousse"><h3>Baked Creations</h3></div>
-          <div class="card-back"><h3>Baked Creations</h3><p>Jiggly cheesecakes, matcha bakes and a very cute bear you'll feel bad about eating.</p><span class="chip">Bold bakes</span></div>
+          <div class="card-face"><img src="assets/img/bakery.jpg" alt="Japanese cheesecakes, donuts and a bear-shaped mousse"><h3 data-i18n="b2.t">Baked Creations</h3></div>
+          <div class="card-back"><h3 data-i18n="b2.t">Baked Creations</h3><p data-i18n="b2.d">Jiggly cheesecakes, matcha bakes and a very cute chocolate bear.</p></div>
         </article>
         <article class="card flip" tabindex="0">
-          <div class="card-face"><img src="assets/img/whisk.jpg" alt="Bamboo whisk and a bowl of frothy matcha"><h3>Pair it with Cha</h3></div>
-          <div class="card-back"><h3>Pair it with Cha</h3><p>Every bake is made to sit next to a cup. Whisked with care, every single time.</p><span class="chip">Rooted in ritual</span></div>
+          <div class="card-face"><img src="assets/img/whisk.jpg" alt="Bamboo whisk and a bowl of frothy matcha"><h3 data-i18n="b3.t">Pair it with Cha</h3></div>
+          <div class="card-back"><h3 data-i18n="b3.t">Pair it with Cha</h3><p data-i18n="b3.d">Every bake is made to sit next to a cup. Whisked with care, every time.</p></div>
         </article>
       </div>
-      <p class="tiny muted center">From traditional tea (cha) to artisanal drinks, gelato creations and bold bakes.</p>
     </div>
   </div>
 </section>
@@ -210,37 +236,37 @@
       <div class="stage-glow" aria-hidden="true"></div>
       <div class="build-cup" data-build-cup></div>
       <div class="build-name">
-        <p class="eyebrow light">Your ritual</p>
-        <h3 data-build-title>Zen Mode</h3>
-        <p data-build-desc>Iced Ceremonial Matcha on Oat</p>
+        <p class="eyebrow light" data-i18n="build.your">Your ritual</p>
+        <h3 data-build-title></h3>
+        <p data-build-desc></p>
       </div>
     </div>
     <div class="build-controls">
-      <p class="eyebrow light">Build your cup</p>
-      <h2 class="h-lg">Make it <em>so you</em>.</h2>
-      <p class="muted light">Stack your perfect cup and save it to show the barista on opening day.</p>
+      <p class="eyebrow light" data-i18n="build.eyebrow">Build your cup</p>
+      <h2 class="h-lg" data-i18n="build.h">Make it <em>so you</em>.</h2>
+      <p class="muted light" data-i18n="build.sub">Stack your perfect cup and save it to show the barista on opening day.</p>
 
       <fieldset class="opt" data-opt="base">
-        <legend>01 · Matcha</legend>
+        <legend data-i18n="opt.base">01 · Matcha</legend>
         <div class="opt-row"></div>
       </fieldset>
       <fieldset class="opt" data-opt="milk">
-        <legend>02 · Base</legend>
+        <legend data-i18n="opt.milk">02 · Base</legend>
         <div class="opt-row"></div>
       </fieldset>
       <fieldset class="opt" data-opt="top">
-        <legend>03 · Crown it</legend>
+        <legend data-i18n="opt.top">03 · Crown it</legend>
         <div class="opt-row"></div>
       </fieldset>
       <div class="sliders">
-        <label>Sweetness <output data-out="sweet">50%</output>
+        <label><span data-i18n="sl.sweet">Sweetness</span> <output data-out="sweet">50%</output>
           <input type="range" min="0" max="100" step="25" value="50" data-range="sweet"></label>
-        <label>Ice <output data-out="ice">Regular</output>
+        <label><span data-i18n="sl.ice">Ice</span> <output data-out="ice">Regular</output>
           <input type="range" min="0" max="2" step="1" value="2" data-range="ice"></label>
       </div>
       <div class="build-actions">
-        <button class="btn btn-light magnetic" data-shuffle>🎲 Surprise me</button>
-        <button class="btn btn-ghost magnetic" data-save>Save my cup ↓</button>
+        <button class="btn btn-light magnetic" data-shuffle data-i18n="build.shuffle">🎲 Surprise me</button>
+        <button class="btn btn-ghost magnetic" data-save data-i18n="build.save">Save my cup ↓</button>
       </div>
     </div>
   </div>
@@ -250,16 +276,16 @@
 <section class="whisk" id="whisk">
   <div class="wrap whisk-grid">
     <div class="whisk-copy">
-      <p class="eyebrow">Mini game</p>
-      <h2 class="h-xl">Whisk it like you mean it.</h2>
-      <p class="lead">The ritual starts with a bamboo whisk and a quick W-shaped flick. Drag back and forth in the bowl until it's frothy.</p>
+      <p class="eyebrow" data-i18n="whisk.eyebrow">Mini game</p>
+      <h2 class="h-xl" data-i18n="whisk.h">Whisk it like you mean it.</h2>
+      <p class="lead" data-i18n="whisk.lead">The ritual starts with a bamboo whisk and a quick W-shaped flick. Drag back and forth in the bowl until it's frothy.</p>
       <div class="meter" aria-label="Froth level"><span data-meter></span></div>
-      <p class="meter-label"><b data-meter-pct>0%</b> froth <span data-meter-msg>Start whisking →</span></p>
-      <button class="btn btn-dark btn-sm" data-whisk-reset>Pour a fresh bowl</button>
+      <p class="meter-label"><b data-meter-pct>0%</b> <span data-i18n="whisk.froth">froth</span> <em data-meter-msg></em></p>
+      <button class="btn btn-dark btn-sm" data-whisk-reset data-i18n="whisk.reset">Pour a fresh bowl</button>
     </div>
     <div class="whisk-stage">
       <canvas class="whisk-canvas" width="560" height="560" data-whisk aria-label="Matcha bowl. Drag inside to whisk."></canvas>
-      <p class="whisk-hint" data-whisk-hint>drag to whisk</p>
+      <p class="whisk-hint" data-whisk-hint data-i18n="whisk.hint">drag to whisk</p>
     </div>
   </div>
 </section>
@@ -269,121 +295,77 @@
   <div class="cakes-bg" data-cake-bg></div>
   <div class="wrap cakes-grid">
     <div class="cakes-copy">
-      <p class="eyebrow light">Gelato cakes</p>
-      <h2 class="h-xl">Tastes, shades<br>&amp; textures.</h2>
-      <p class="lead light" data-cake-desc>Velvet matcha shell, matcha gelato center, cocoa crumb base.</p>
+      <p class="eyebrow light" data-i18n="cakes.eyebrow">Gelato cakes</p>
+      <h2 class="h-xl" data-i18n="cakes.h">Tastes, shades<br>&amp; textures.</h2>
+      <p class="lead light" data-cake-desc></p>
       <div class="swatches" role="radiogroup" aria-label="Cake color" data-swatches></div>
-      <p class="tiny light">Core and seasonal colors. Made for celebration, made for gifting.</p>
+      <p class="tiny light" data-i18n="cakes.tiny">Core and seasonal colors. Pick one for your next celebration.</p>
     </div>
     <div class="cake-stage">
       <div class="cake" data-cake></div>
-      <p class="cake-name" data-cake-name>Matcha</p>
+      <p class="cake-name" data-cake-name></p>
     </div>
   </div>
 </section>
 
-<!-- BRAND DNA -->
-<section class="dna" id="dna">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">Brand DNA</p>
-      <h2 class="h-xl">Four things we never skip.</h2>
+<!-- TAG US · BOGO -->
+<section class="tag" id="tag">
+  <div class="wrap tag-grid">
+    <div class="tag-copy">
+      <p class="eyebrow" data-i18n="tag.eyebrow">Tag us · get one free</p>
+      <h2 class="h-xl" data-i18n="tag.h">Snap it. Tag it. <em>Get one free.</em></h2>
+      <p class="lead" data-i18n="tag.lead">Post a photo of your Matcha Zen order, tag <b>@matchazenhouse</b> and show it at the counter. Buy one, get one free.</p>
+      <a class="btn btn-dark magnetic" href="https://www.instagram.com/matchazenhouse/" target="_blank" rel="noopener" data-i18n="tag.cta">Open @matchazenhouse ↗</a>
     </div>
-    <div class="dna-row">
-      <article class="dna-card is-open" tabindex="0" style="--img:url(../assets/img/texture.jpg)">
-        <span class="dna-num">01</span>
-        <div class="dna-body"><h3>100% Organic Matcha</h3><p>The foundation of the brand is one premium, natural ingredient: 100% organic matcha.</p></div>
-      </article>
-      <article class="dna-card" tabindex="0" style="--img:url(../assets/img/whisk.jpg)">
-        <span class="dna-num">02</span>
-        <div class="dna-body"><h3>The Ritual of Cha</h3><p>Turning preparation into a ritual experience, from our farms to your cup.</p></div>
-      </article>
-      <article class="dna-card" tabindex="0" style="--img:url(../assets/img/gelato-bowls.jpg)">
-        <span class="dna-num">03</span>
-        <div class="dna-body"><h3>Matcha Innovation</h3><p>From traditional tea (cha) to artisanal matcha drinks, gelato creations and bold bakes.</p></div>
-      </article>
-      <article class="dna-card" tabindex="0" style="--img:url(../assets/img/interior.jpg)">
-        <span class="dna-num">04</span>
-        <div class="dna-body"><h3>Calm Luxury</h3><p>Step into a space shaped by concrete, natural light, wood, greenery and zen.</p></div>
-      </article>
-    </div>
+    <ol class="tag-steps">
+      <li class="tag-step reveal"><span class="ts-num">1</span><span class="ts-icon" aria-hidden="true">📸</span><h3 data-i18n="tag.s1.t">Snap</h3><p data-i18n="tag.s1.d">Your drink, your gelato, your cake. Make it look good.</p></li>
+      <li class="tag-step reveal"><span class="ts-num">2</span><span class="ts-icon" aria-hidden="true">🏷️</span><h3 data-i18n="tag.s2.t">Tag</h3><p data-i18n="tag.s2.d">Tag @matchazenhouse on a public Instagram post.</p></li>
+      <li class="tag-step reveal"><span class="ts-num">3</span><span class="ts-icon" aria-hidden="true">🍵</span><h3 data-i18n="tag.s3.t">Show &amp; sip</h3><p data-i18n="tag.s3.d">Show the post at the counter. Your second one is on us.</p></li>
+    </ol>
   </div>
-</section>
-
-<!-- EVERY VISIT (horizontal scroll) -->
-<section class="visit-steps" id="space">
-  <div class="hs-sticky">
-    <div class="hs-head wrap">
-      <p class="eyebrow light">The space</p>
-      <h2 class="h-xl">Every visit is a ritual.</h2>
-      <p class="muted light">Tadao Ando minimalism meets Japanese wabi-sabi: raw concrete, natural wood, stainless steel and greenery.</p>
-    </div>
-    <div class="hs-track" data-hs>
-      <article class="hs-card"><img src="assets/img/store.jpg" alt="Matcha Zen storefront with glass walls"><div><span>01</span><h3>Enter</h3><p>A calm green environment. An escape from the outside world.</p></div></article>
-      <article class="hs-card"><img src="assets/img/interior.jpg" alt="Gelato display case and greenery inside the store"><div><span>02</span><h3>Explore</h3><p>Matcha creations. Thoughtfully crafted, all in one place.</p></div></article>
-      <article class="hs-card"><img src="assets/img/whisk.jpg" alt="Bamboo whisk resting in a black bowl beside a cup of matcha"><div><span>03</span><h3>Experience</h3><p>The craftsmanship behind every drink and cake, right in front of you.</p></div></article>
-      <article class="hs-card"><img src="assets/img/tasting.jpg" alt="Woman tasting a spoonful of matcha gelato"><div><span>04</span><h3>Enjoy</h3><p>The taste. Each sip. Each bite. Pausing to savor.</p></div></article>
-      <article class="hs-card"><img src="assets/img/friends.jpg" alt="Friends holding matcha drinks inside the store"><div><span>05</span><h3>Return</h3><p>A ritual worth returning to, every day.</p></div></article>
-    </div>
-    <div class="hs-bar wrap"><span data-hs-bar></span></div>
-  </div>
-</section>
-
-<!-- VISUAL WORLD -->
-<section class="world" id="world">
-  <div class="wrap section-head">
-    <p class="eyebrow">Our visual world</p>
-    <h2 class="h-xl">Made for your camera roll.</h2>
-    <p class="muted">Tag us <a class="ig" href="https://www.instagram.com/matchazenhouse/" target="_blank" rel="noopener">@matchazenhouse</a> when we open.</p>
+  <div class="wrap feed-head">
+    <h3 data-i18n="tag.feed">Tagged by you</h3>
+    <p class="tiny muted" data-i18n="tag.feedsub">Public posts that tag @matchazenhouse show up here. Drag to browse.</p>
   </div>
   <div class="reel" data-reel>
-    <div class="reel-track">
+    <div class="reel-track" data-feed-target>
       <img src="assets/img/smile.jpg" alt="Woman laughing with an iced matcha"><img src="assets/img/lineup.jpg" alt="Five signature matcha drinks lined up"><img src="assets/img/uniform-2.jpg" alt="Crew member in a black Matcha Zen polo"><img src="assets/img/hand-cup.jpg" alt="Hand holding a layered matcha drink"><img src="assets/img/cakes.jpg" alt="Colorful velvet gelato cakes"><img src="assets/img/leaves.jpg" alt="Fresh tea leaves in sunlight"><img src="assets/img/lineup-2.jpg" alt="Second lineup of matcha drinks"><img src="assets/img/uniform-3.jpg" alt="Two crew members inside the store">
     </div>
   </div>
   <div class="reel reel-rev" data-reel>
     <div class="reel-track">
-      <img src="assets/img/cafe.jpg" alt="Store seating with wooden chairs"><img src="assets/img/gelato-texture.jpg" alt="Close-up of matcha gelato texture"><img src="assets/img/uniform-1.jpg" alt="Crew member in Matcha Zen polo"><img src="assets/img/bakery.jpg" alt="Cheesecakes and donuts"><img src="assets/img/swirl.jpg" alt="Matcha and milk swirl"><img src="assets/img/drink.jpg" alt="Whipped matcha drink"><img src="assets/img/umbrella.jpg" alt="Person with umbrella walking through tea fields">
+      <img src="assets/img/cafe.jpg" alt="Store seating with wooden chairs"><img src="assets/img/gelato-texture.jpg" alt="Close-up of matcha gelato texture"><img src="assets/img/uniform-1.jpg" alt="Crew member in Matcha Zen polo"><img src="assets/img/bakery.jpg" alt="Cheesecakes and donuts"><img src="assets/img/swirl.jpg" alt="Matcha and milk swirl"><img src="assets/img/drink.jpg" alt="Whipped matcha drink"><img src="assets/img/friends.jpg" alt="Friends with matcha drinks inside the store"><img src="assets/img/tasting.jpg" alt="Woman tasting matcha gelato">
     </div>
   </div>
-</section>
-
-<!-- MANIFESTO -->
-<section class="manifesto">
-  <div class="manifesto-bg" data-parallax style="background-image:url(assets/img/field-texture.jpg)"></div>
-  <div class="wrap manifesto-inner">
-    <p class="h-xl reveal-words">Matcha is not a trend.</p>
-    <p class="h-xl reveal-words accent">Matcha is a new global lifestyle.</p>
-    <span class="mark mark-lg" data-mark></span>
-  </div>
+  <p class="wrap tiny muted fine" data-i18n="tag.fine">Buy one, get one free on an item of equal or lesser value. Public posts only. One per guest per visit.</p>
 </section>
 
 <!-- VISIT / OPENING -->
 <section class="visit" id="visit">
   <div class="wrap visit-grid">
     <div class="visit-card">
-      <p class="eyebrow">Opening December 10, 2026</p>
-      <h2 class="h-xl">Houston, we have a matcha.</h2>
-      <p class="lead">Our first ritual house opens in Houston, Texas on December 10. The exact address drops on Instagram first.</p>
+      <p class="eyebrow" data-i18n="visit.eyebrow">Opening December 10, 2026</p>
+      <h2 class="h-xl" data-i18n="visit.h">Houston, we have a matcha.</h2>
+      <p class="lead" data-i18n="visit.lead">Our first ritual house opens in Houston, Texas on December 10. The exact address drops on Instagram first.</p>
       <div class="countdown countdown-dark" data-countdown>
-        <div><b data-cd="d">00</b><small>days</small></div>
-        <div><b data-cd="h">00</b><small>hrs</small></div>
-        <div><b data-cd="m">00</b><small>min</small></div>
-        <div><b data-cd="s">00</b><small>sec</small></div>
+        <div><b data-cd="d">00</b><small data-i18n="cd.d">days</small></div>
+        <div><b data-cd="h">00</b><small data-i18n="cd.h">hrs</small></div>
+        <div><b data-cd="m">00</b><small data-i18n="cd.m">min</small></div>
+        <div><b data-cd="s">00</b><small data-i18n="cd.s">sec</small></div>
       </div>
       <div class="visit-actions">
-        <a class="btn btn-dark magnetic" href="https://www.instagram.com/matchazenhouse/" target="_blank" rel="noopener">Follow @matchazenhouse ↗</a>
-        <button class="btn btn-outline magnetic" data-ics>Add to calendar</button>
+        <a class="btn btn-dark magnetic" href="https://www.instagram.com/matchazenhouse/" target="_blank" rel="noopener" data-i18n="visit.follow">Follow @matchazenhouse ↗</a>
+        <button class="btn btn-outline magnetic" data-ics data-i18n="visit.cal">Add to calendar</button>
       </div>
       <ul class="visit-facts">
-        <li><b>Where</b><span>Houston, TX</span></li>
-        <li><b>When</b><span>Thursday, December 10, 2026</span></li>
-        <li><b>What</b><span>Drinks · Gelato · Gelato Cakes · Bakery</span></li>
+        <li><b data-i18n="fact.where">Where</b><span data-i18n="fact.where.v">Houston, TX</span></li>
+        <li><b data-i18n="fact.when">When</b><span data-i18n="fact.when.v">Thursday, December 10, 2026</span></li>
+        <li><b data-i18n="fact.what">What</b><span data-i18n="fact.what.v">Drinks · Gelato · Gelato Cakes · Bakery</span></li>
       </ul>
     </div>
     <div class="visit-media">
       <img src="assets/img/store.jpg" alt="Matcha Zen storefront rendering">
-      <div class="visit-badge"><span class="badge-spin" aria-hidden="true">COMING SOON · COMING SOON · COMING SOON ·</span><span class="mark" data-mark></span></div>
+      <div class="visit-badge"><span class="badge-spin" aria-hidden="true"></span><span class="mark" data-mark></span></div>
     </div>
   </div>
 </section>
@@ -393,29 +375,30 @@
 <footer class="footer">
   <div class="marquee marquee-cream" data-marquee>
     <div class="marquee-track">
-      <span>From ingredient to ritual</span><b>▲</b><span>From nature to our table</span><b>▲</b><span>Rooted in ritual</span><b>▲</b><span>Whisked with care</span><b>▲</b>
-      <span>From ingredient to ritual</span><b>▲</b><span>From nature to our table</span><b>▲</b><span>Rooted in ritual</span><b>▲</b><span>Whisked with care</span><b>▲</b>
+      <span data-i18n="f.m1">From ingredient to ritual</span><b>▲</b><span data-i18n="f.m2">From nature to our table</span><b>▲</b><span data-i18n="f.m3">Rooted in ritual</span><b>▲</b><span data-i18n="f.m4">Whisked with care</span><b>▲</b>
+      <span data-i18n="f.m1">From ingredient to ritual</span><b>▲</b><span data-i18n="f.m2">From nature to our table</span><b>▲</b><span data-i18n="f.m3">Rooted in ritual</span><b>▲</b><span data-i18n="f.m4">Whisked with care</span><b>▲</b>
     </div>
   </div>
   <div class="wrap footer-grid">
     <div>
       <span class="logo logo-foot" data-logo></span>
-      <p class="muted light">The Ritual of Cha · 100% Organic Matcha</p>
+      <p class="muted light" data-i18n="f.tag">The Ritual of Cha · 100% Organic Matcha</p>
     </div>
     <div class="footer-links">
-      <a href="#menu">Menu</a><a href="#build">Build your cup</a><a href="#cakes">Gelato cakes</a><a href="#visit">Visit</a>
+      <a href="#menu" data-i18n="nav.menu">Menu</a><a href="#build" data-i18n="nav.build">Build your cup</a><a href="#cakes" data-i18n="nav.cakes">Gelato cakes</a><a href="#tag" data-i18n="nav.tag">Tag &amp; BOGO</a><a href="#visit" data-i18n="nav.visit">Visit</a>
       <a href="https://www.instagram.com/matchazenhouse/" target="_blank" rel="noopener">Instagram</a>
     </div>
     <div class="footer-nomix">
-      <p class="tiny light">A brand by</p>
-      <a href="https://hellohi6228-code.github.io/NOMIX/" target="_blank" rel="noopener" class="nomix">NOMIX <span>Hospitality Group ↗</span></a>
+      <p class="tiny light" data-i18n="f.by">A brand by</p>
+      <a href="https://hellohi6228-code.github.io/NOMIX/" target="_blank" rel="noopener" class="nomix">NOMIX <span data-i18n="f.nomix">Hospitality Group ↗</span></a>
     </div>
   </div>
-  <p class="wrap tiny light copy">© 2026 Matcha Zen · A NOMIX Hospitality brand · Houston, TX</p>
+  <p class="wrap tiny light copy" data-i18n="f.copy">© 2026 Matcha Zen · A NOMIX Hospitality brand · Houston, TX</p>
 </footer>
 
 <div class="toast" role="status" aria-live="polite" data-toast></div>
 
-<script src="js/main.js?v=2"></script>
+<script src="js/i18n.js?v=3"></script>
+<script src="js/main.js?v=3"></script>
 </body>
 </html>

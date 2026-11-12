@@ -4,9 +4,13 @@
 (() => {
 'use strict';
 
-// Opening target. The deck says "Coming soon: Houston, TX" and the opening day is December 10, 2026 (Houston time).
-// Change this one line when the exact opening day is set.
+// Opening day: December 10, 2026 (Houston time). Change this one line if the date moves.
 const OPEN_DATE = new Date('2026-12-10T00:00:00-06:00');
+
+// Tagged-post feed for the "Tagged by you" carousel. A JSON file (or any URL returning JSON)
+// shaped like: { "posts": [ { "image": "https://...", "user": "@handle", "url": "https://instagram.com/p/..." } ] }
+// See README.md for how to keep it filled automatically.
+const TAGGED_FEED_URL = 'data/tagged.json';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -16,8 +20,22 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(pointer: fine)').matches;
 let uid = 0;
 
+/* ---------------- Language ---------------- */
+const LANGS = ['en', 'zh', 'es'];
+function pickLang() {
+  const q = new URLSearchParams(location.search).get('lang');
+  if (LANGS.includes(q)) return q;
+  try { const s = localStorage.getItem('mz-lang'); if (LANGS.includes(s)) return s; } catch (e) {}
+  const n = (navigator.language || 'en').slice(0, 2).toLowerCase();
+  return LANGS.includes(n) ? n : 'en';
+}
+let LANG = pickLang();
+const D = window.I18N;
+const t = k => (D[LANG] && D[LANG][k] !== undefined ? D[LANG][k] : D.en[k]);
+const onLang = [];
+
 /* ---------------- Logo: MΛTCHΛ©ZEN drawn from geometric strokes ---------------- */
-const S = 17; // stroke weight on a 100-unit cap height
+const S = 17;
 const LETTERS = {
   M: { w: 100, d: 'M8.5 140 L8.5 0 L50 72 L91.5 0 L91.5 140' },
   A: { w: 94, d: 'M-2 135 L47 -12 L96 135' },
@@ -45,18 +63,13 @@ function logoSVG() {
   return { svg: `<svg viewBox="-4 0 ${W + 8} 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Matcha Zen"><defs><clipPath id="${id}"><rect x="-10" y="0" width="${W + 20}" height="100"/></clipPath></defs><g clip-path="url(#${id})">${g}</g></svg>`, w: W + 8 };
 }
 $$('[data-logo]').forEach(el => { el.innerHTML = logoSVG().svg; });
-const heroLogo = $('.hero-logo .logo');
-requestAnimationFrame(() => setTimeout(() => heroLogo && heroLogo.classList.add('is-in'), 150));
+setTimeout(() => { const h = $('.hero-logo .logo'); h && h.classList.add('is-in'); }, 150);
 
-/* Mountain mark */
 const MARK = '<svg viewBox="0 0 100 62" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill="currentColor" d="M50 0 C46 2 40 15 28 29 C19 39 9 46 2 51 C-1 53 0 56 4 57 C18 60 34 62 50 62 C66 62 82 60 96 57 C100 56 101 53 98 51 C91 46 81 39 72 29 C60 15 54 2 50 0Z"/></svg>';
 $$('[data-mark]').forEach(el => { el.innerHTML = MARK; });
 
-/* Favicon-like circular badge text */
 const badge = $('.badge-spin');
-if (badge) {
-  badge.innerHTML = `<svg viewBox="0 0 150 150"><defs><path id="bc" d="M75 75 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs><text fill="#F4F1EA" font-family="Figtree, sans-serif" font-weight="800" font-size="13.2" letter-spacing="3.2"><textPath href="#bc">COMING SOON ▲ HOUSTON TX ▲ DEC 10 ▲</textPath></text></svg>`;
-}
+if (badge) badge.innerHTML = `<svg viewBox="0 0 150 150"><defs><path id="bc" d="M75 75 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs><text fill="#F4F1EA" font-family="Figtree, sans-serif" font-weight="800" font-size="13.2" letter-spacing="3.2"><textPath href="#bc">COMING SOON ▲ HOUSTON TX ▲ DEC 10 ▲</textPath></text></svg>`;
 
 /* ---------------- Toast + confetti ---------------- */
 const toastEl = $('[data-toast]');
@@ -90,7 +103,7 @@ if (fine && cursor && !reduce) {
   let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
   addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`; });
   (function loop() { rx = lerp(rx, mx, .18); ry = lerp(ry, my, .18); ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`; requestAnimationFrame(loop); })();
-  document.addEventListener('pointerover', e => { cursor.classList.toggle('is-hover', !!e.target.closest('a, button, .card, [data-tilt], .dna-card, .swatch, input, canvas')); });
+  document.addEventListener('pointerover', e => { cursor.classList.toggle('is-hover', !!e.target.closest('a, button, .card, [data-tilt], .swatch, input, canvas, [data-house-photo], .reel')); });
   document.addEventListener('pointerleave', () => cursor.classList.add('is-hidden'));
   document.addEventListener('pointerenter', () => cursor.classList.remove('is-hidden'));
 }
@@ -113,35 +126,21 @@ const io = new IntersectionObserver(entries => {
     if (en.isIntersecting) links.forEach(a => a.classList.toggle('is-active', a.getAttribute('href') === '#' + en.target.id));
   });
 }, { rootMargin: '-45% 0px -50% 0px' });
-['menu', 'build', 'whisk', 'cakes', 'space', 'visit'].forEach(id => { const s = document.getElementById(id); s && io.observe(s); });
+['menu', 'build', 'whisk', 'cakes', 'tag', 'visit'].forEach(id => { const s = document.getElementById(id); s && io.observe(s); });
 
 const burger = $('.nav-burger'), mm = $('.mobile-menu');
-burger.addEventListener('click', () => {
-  const open = !mm.classList.contains('is-open');
+function setMenu(open) {
   mm.classList.toggle('is-open', open); burger.setAttribute('aria-expanded', open); mm.setAttribute('aria-hidden', !open);
   document.body.style.overflow = open ? 'hidden' : '';
-});
-$$('a', mm).forEach(a => a.addEventListener('click', () => { mm.classList.remove('is-open'); burger.setAttribute('aria-expanded', false); mm.setAttribute('aria-hidden', true); document.body.style.overflow = ''; }));
+}
+burger.addEventListener('click', () => setMenu(!mm.classList.contains('is-open')));
+$$('a', mm).forEach(a => a.addEventListener('click', () => setMenu(false)));
 
 /* ---------------- Reveal ---------------- */
-$$('.reveal-words').forEach(el => {
-  const words = el.textContent.trim().split(/\s+/);
-  el.innerHTML = words.map((w, i) => `<span class="w"><span style="transition-delay:${i * 45}ms">${w}</span></span>`).join(' ');
-});
 const rio = new IntersectionObserver(entries => entries.forEach(en => {
   if (en.isIntersecting) { en.target.classList.add('is-in'); rio.unobserve(en.target); }
 }), { threshold: .2 });
-$$('.reveal, .reveal-words').forEach(el => rio.observe(el));
-
-/* "Not a tea shop" strike sequence */
-const strikes = $$('[data-strike]'), finalLine = $('.nota-final');
-const sio = new IntersectionObserver(entries => entries.forEach(en => {
-  if (!en.isIntersecting) return;
-  strikes.forEach((li, i) => setTimeout(() => li.classList.add('is-struck'), 500 + i * 650));
-  setTimeout(() => finalLine.classList.add('is-in'), 500 + strikes.length * 650);
-  sio.disconnect();
-}), { threshold: .45 });
-sio.observe($('.nota'));
+$$('.reveal').forEach(el => rio.observe(el));
 
 /* ---------------- Countdown ---------------- */
 const cds = $$('[data-countdown]');
@@ -161,17 +160,15 @@ function tickCountdown() {
       prev[ci + k] = txt;
     }
   }));
-  if (OPEN_DATE - Date.now() <= 0) $$('.cd-label').forEach(l => l.textContent = "We're open! Come see us in Houston.");
+  if (OPEN_DATE - Date.now() <= 0) $$('.cd-label').forEach(l => l.textContent = t('cd.done'));
 }
 tickCountdown(); setInterval(tickCountdown, 1000);
+onLang.push(tickCountdown);
 
 /* ---------------- Hero parallax + stickers ---------------- */
-const heroBg = $('.hero-bg'), stickers = $$('.sticker');
+const heroBg = $('.hero-bg'), stickers = $$('.sticker'), sky = $('.sky');
 let pmx = 0, pmy = 0, tmx = 0, tmy = 0;
-if (!reduce) {
-  addEventListener('pointermove', e => { tmx = e.clientX / innerWidth - .5; tmy = e.clientY / innerHeight - .5; });
-}
-const parallaxEls = $$('[data-parallax]');
+if (!reduce) addEventListener('pointermove', e => { tmx = e.clientX / innerWidth - .5; tmy = e.clientY / innerHeight - .5; });
 function frame() {
   pmx = lerp(pmx, tmx, .06); pmy = lerp(pmy, tmy, .06);
   if (!reduce) {
@@ -180,45 +177,84 @@ function frame() {
       heroBg.style.transform = `translate3d(${pmx * -24}px, ${y * .28 + pmy * -18}px, 0) scale(1.04)`;
       stickers.forEach(s => { const dpt = +s.dataset.depth; s.style.transform = `translate3d(${pmx * dpt * 2}px, ${pmy * dpt * 2 - y * dpt * .02}px, 0)`; });
     }
-    parallaxEls.forEach(el => {
-      if (el === heroBg) return;
-      const r = el.parentElement.getBoundingClientRect();
-      if (r.bottom > 0 && r.top < innerHeight) el.style.transform = `translate3d(0, ${(r.top + r.height / 2 - innerHeight / 2) * -.18}px, 0)`;
-    });
+    if (sky) { sky.style.setProperty('--px', `${pmx * -50}px`); sky.style.setProperty('--py', `${pmy * -30}px`); }
   }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-/* ---------------- Marquees + reels (scroll-velocity boosted) ---------------- */
+/* ---------------- Marquees + reels (scroll-velocity boosted, draggable reels) ---------------- */
 let vel = 0, lastScroll = scrollY;
-addEventListener('scroll', () => { vel = clamp(scrollY - lastScroll, -60, 60); lastScroll = scrollY; onScrollNav(); onScrollHS(); }, { passive: true });
+addEventListener('scroll', () => { vel = clamp(scrollY - lastScroll, -60, 60); lastScroll = scrollY; onScrollNav(); }, { passive: true });
 const loops = [];
-$$('[data-marquee] .marquee-track').forEach((t, i) => loops.push({ t, x: 0, speed: i % 2 ? -.6 : .8 }));
-$$('[data-reel]').forEach(r => {
-  const t = $('.reel-track', r);
-  t.innerHTML += t.innerHTML; // duplicate for seamless loop
-  const lp = { t, x: 0, speed: r.classList.contains('reel-rev') ? -.5 : .5, paused: false };
-  r.addEventListener('pointerenter', () => lp.paused = true);
-  r.addEventListener('pointerleave', () => lp.paused = false);
+$$('[data-marquee] .marquee-track').forEach((tr, i) => loops.push({ t: tr, x: 0, speed: i % 2 ? -.6 : .8 }));
+function setupReel(r) {
+  const tr = $('.reel-track', r);
+  tr.innerHTML += tr.innerHTML; // duplicate for a seamless loop
+  const lp = { t: tr, x: 0, speed: r.classList.contains('reel-rev') ? -.5 : .5, paused: false, drag: false };
+  r.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') lp.paused = true; });
+  r.addEventListener('pointerleave', () => { if (!lp.drag) lp.paused = false; });
+  let sx = 0, startX = 0, moved = false;
+  r.addEventListener('pointerdown', e => { lp.drag = true; lp.paused = true; sx = e.clientX; startX = lp.x; moved = false; r.setPointerCapture(e.pointerId); });
+  r.addEventListener('pointermove', e => {
+    if (!lp.drag) return;
+    const dx = e.clientX - sx;
+    if (Math.abs(dx) > 5) { moved = true; r.classList.add('dragging'); }
+    lp.x = startX + dx;
+  });
+  const end = () => { if (!lp.drag) return; lp.drag = false; lp.paused = false; setTimeout(() => r.classList.remove('dragging'), 0); };
+  r.addEventListener('pointerup', end); r.addEventListener('pointercancel', end);
+  r.addEventListener('click', e => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
   loops.push(lp);
-});
+}
 function runLoops() {
   vel *= .92;
   loops.forEach(l => {
-    if (reduce) return;
     const half = l.t.scrollWidth / 2;
     if (!half) return;
-    const boost = 1 + Math.abs(vel) * .12;
-    const dir = vel < -1 ? -1 : 1;
-    l.x -= l.paused ? 0 : l.speed * boost * dir;
-    if (l.x <= -half) l.x += half;
-    if (l.x > 0) l.x -= half;
+    if (!reduce && !l.paused) {
+      const boost = 1 + Math.abs(vel) * .12;
+      const dir = vel < -1 ? -1 : 1;
+      l.x -= l.speed * boost * dir;
+    }
+    while (l.x <= -half) l.x += half;
+    while (l.x > 0) l.x -= half;
     l.t.style.transform = `translate3d(${l.x}px,0,0)`;
   });
   requestAnimationFrame(runLoops);
 }
-requestAnimationFrame(runLoops);
+
+/* Tagged posts feed → first reel. Built with DOM APIs so feed data can never inject markup. */
+async function loadTagged() {
+  try {
+    const ctrl = new AbortController(); setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(TAGGED_FEED_URL, { cache: 'no-store', signal: ctrl.signal });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const posts = Array.isArray(data) ? data : (data.posts || []);
+    return posts.filter(p => p && /^https:\/\//.test(p.image || '') && (!p.url || /^https:\/\//.test(p.url))).slice(0, 24);
+  } catch (e) { return []; }
+}
+(async () => {
+  const posts = await loadTagged();
+  const target = $('[data-feed-target]');
+  if (posts.length && target) {
+    const frag = document.createDocumentFragment();
+    posts.forEach(p => {
+      const a = document.createElement(p.url ? 'a' : 'div');
+      a.className = 'tagged';
+      if (p.url) { a.href = p.url; a.target = '_blank'; a.rel = 'noopener'; }
+      const img = document.createElement('img');
+      img.src = p.image; img.loading = 'lazy'; img.alt = `${t('tagged.by')} ${p.user || ''}`.trim();
+      a.appendChild(img);
+      if (p.user) { const s = document.createElement('span'); s.textContent = String(p.user).startsWith('@') ? p.user : '@' + p.user; a.appendChild(s); }
+      frag.appendChild(a);
+    });
+    target.prepend(frag);
+  }
+  $$('[data-reel]').forEach(setupReel);
+  requestAnimationFrame(runLoops);
+})();
 
 /* ---------------- Magnetic buttons + tilt ---------------- */
 if (fine && !reduce) {
@@ -229,14 +265,67 @@ if (fine && !reduce) {
     });
     b.addEventListener('pointerleave', () => { b.style.transform = ''; });
   });
-  $$('[data-tilt]').forEach(c => {
+  $$('[data-tilt], [data-house-photo]').forEach(c => {
     c.addEventListener('pointermove', e => {
       const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-      c.style.transform = `perspective(900px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg)`;
+      c.style.transform = `perspective(900px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
     });
     c.addEventListener('pointerleave', () => { c.style.transform = ''; });
   });
 }
+
+/* ---------------- Ritual House: big split title, hotspots, cheers ---------------- */
+const houseH = $('.house-h');
+function splitHouseTitle() {
+  const txt = houseH.textContent.trim();
+  const parts = LANG === 'zh' ? [...txt] : txt.split(/\s+/);
+  const accentIdx = LANG === 'zh' ? [2, 3] : parts.findIndex(w => /^matcha$/i.test(w));
+  houseH.innerHTML = parts.map((w, i) => {
+    const acc = Array.isArray(accentIdx) ? accentIdx.includes(i) : i === accentIdx;
+    const br = LANG === 'zh' && i === 3 && parts.length > 5 ? '<br>' : '';
+    return `<span class="hw${acc ? ' accent' : ''}"><span style="transition-delay:${i * 70}ms">${w}</span></span>${br}`;
+  }).join(LANG === 'zh' ? '' : ' ');
+  if (houseH.dataset.seen) houseH.classList.add('is-in');
+}
+new IntersectionObserver(([en], obs) => {
+  if (en.isIntersecting) { houseH.dataset.seen = 1; houseH.classList.add('is-in'); obs.disconnect(); }
+}, { threshold: .3 }).observe(houseH);
+
+const photo = $('[data-house-photo]'), hotCard = $('[data-hot-card]'), cheersEl = $('[data-cheers]');
+let hotIdx = -1, cheersI = 0;
+function openHot(i) {
+  hotIdx = i;
+  const h = t('hots')[i];
+  $('[data-hot-title]').textContent = h.t; $('[data-hot-desc]').textContent = h.d;
+  hotCard.hidden = false;
+  $$('.hot', photo).forEach((b, j) => b.classList.toggle('is-on', j === i));
+}
+function closeHot() { hotIdx = -1; hotCard.hidden = true; $$('.hot', photo).forEach(b => b.classList.remove('is-on')); }
+$$('.hot', photo).forEach(b => b.addEventListener('click', e => { e.stopPropagation(); +b.dataset.hot === hotIdx ? closeHot() : openHot(+b.dataset.hot); }));
+$('[data-hot-close]').addEventListener('click', e => { e.stopPropagation(); closeHot(); });
+hotCard.addEventListener('click', e => e.stopPropagation());
+$('[data-hot-build]').addEventListener('click', e => {
+  e.stopPropagation();
+  state.base = 'ceremonial'; state.milk = 'oat'; state.ice = 2;
+  if (hotIdx === 1) { state.base = 'dirty'; state.milk = 'whole'; state.top = 'gv'; } else state.top = 'gm';
+  renderBuild(true); closeHot();
+  $('#build').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+});
+photo.addEventListener('click', e => {
+  if (!hotCard.hidden) { closeHot(); return; }
+  const words = t('cheers');
+  cheersEl.textContent = words[cheersI++ % words.length];
+  cheersEl.classList.remove('go'); void cheersEl.offsetWidth; cheersEl.classList.add('go');
+  photo.classList.remove('clink'); void photo.offsetWidth; photo.classList.add('clink');
+  confetti(e.clientX, e.clientY, 40);
+});
+onLang.push(() => { if (hotIdx >= 0) openHot(hotIdx); });
+
+$$('[data-goto-tab]').forEach(b => b.addEventListener('click', () => {
+  const tab = $(`.tab[data-tab="${b.dataset.gotoTab}"]`);
+  tab && tab.click();
+  $('#menu').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+}));
 
 /* ---------------- Cup illustration ---------------- */
 function cupSVG({ layers, top = 'none', topColor, ice = 2, dust = false, fizz = false, w = 140 }) {
@@ -244,13 +333,12 @@ function cupSVG({ layers, top = 'none', topColor, ice = 2, dust = false, fizz = 
   const cupPath = 'M18 70 L32 211 Q33 220 42 220 L98 220 Q107 220 108 211 L122 70 Z';
   const fillTop = top === 'whip' || top === 'gelato' ? 76 : 84;
   const total = 220 - fillTop;
-  // Draw from the top layer down so lower layers sit over upper ones with a wavy seam
-  let y = 220, seams = [];
+  let y = 220; const seams = [];
   layers.forEach(L => { const h = L.h * total; seams.push({ c: L.c, top: y - h }); y -= h; });
   let liquid = '';
   for (let i = seams.length - 1; i >= 0; i--) {
-    const t = seams[i].top, amp = i === seams.length - 1 ? 1.5 : 4;
-    liquid += `<path fill="${seams[i].c}" d="M10 ${t} Q30 ${t - amp} 50 ${t} T90 ${t} T130 ${t} V230 H10 Z"/>`;
+    const tp = seams[i].top, amp = i === seams.length - 1 ? 1.5 : 4;
+    liquid += `<path fill="${seams[i].c}" d="M10 ${tp} Q30 ${tp - amp} 50 ${tp} T90 ${tp} T130 ${tp} V230 H10 Z"/>`;
   }
   let iceSvg = '';
   const cubes = [[40, 92, -12], [72, 98, 9], [92, 86, -4], [56, 118, 20], [86, 124, -16]].slice(0, ice === 0 ? 0 : ice === 1 ? 2 : 5);
@@ -293,124 +381,117 @@ function cupSVG({ layers, top = 'none', topColor, ice = 2, dust = false, fizz = 
 
 /* ---------------- Menu tabs ---------------- */
 const tabs = $$('.tab'), ink = $('.tab-ink');
-function moveInk(t) { ink.style.width = t.offsetWidth + 'px'; ink.style.height = t.offsetHeight + 'px'; ink.style.transform = `translate(${t.offsetLeft - 6}px, ${t.offsetTop - 6}px)`; }
-tabs.forEach(t => t.addEventListener('click', () => {
-  tabs.forEach(x => { x.classList.toggle('is-active', x === t); x.setAttribute('aria-selected', x === t); });
-  $$('.panel').forEach(p => p.classList.toggle('is-active', p.dataset.panel === t.dataset.tab));
-  moveInk(t);
+function moveInk(tb) { ink.style.width = tb.offsetWidth + 'px'; ink.style.height = tb.offsetHeight + 'px'; ink.style.transform = `translate(${tb.offsetLeft - 6}px, ${tb.offsetTop - 6}px)`; }
+tabs.forEach(tb => tb.addEventListener('click', () => {
+  tabs.forEach(x => { x.classList.toggle('is-active', x === tb); x.setAttribute('aria-selected', x === tb); });
+  $$('.panel').forEach(p => p.classList.toggle('is-active', p.dataset.panel === tb.dataset.tab));
+  moveInk(tb);
 }));
 addEventListener('resize', () => moveInk($('.tab.is-active')));
-moveInk($('.tab.is-active'));
+onLang.push(() => moveInk($('.tab.is-active')));
 $$('.card.flip').forEach(c => c.addEventListener('click', e => { if (!e.target.closest('a')) c.classList.toggle('is-flipped'); }));
 
 /* ---------------- Drinks shelf (names from the deck menu) ---------------- */
 const DRINKS = [
-  { n: 'Signature Matcha Latte', l: [['#F2EFE6', .55], ['#5E8E35', .45]], ice: 2, d: 'Ceremonial-grade organic matcha poured over cold milk. Clean, creamy, and the one every ritual starts with.', t: ['Iced', 'Signature', 'Organic'] },
-  { n: 'Whipped Matcha Einspanner', l: [['#93B661', 1]], top: 'whip', dust: true, ice: 1, d: 'Velvety iced matcha under a thick crown of whipped cream, finished with a dusting of matcha.', t: ['Whipped', 'Rich', 'Fan favorite'] },
-  { n: 'Dirty Matcha Cold Foam', l: [['#EFE9DE', .42], ['#6B4A2E', .24], ['#A9C46E', .34]], dust: true, ice: 2, d: 'Matcha meets espresso. Cold milk, a shot of coffee and a matcha cold foam on top.', t: ['Matcha + coffee', 'Cold foam'] },
-  { n: 'Coconut Matcha Cloud', l: [['#F7F5EF', .5], ['#7FA650', .3], ['#FFFFFF', .2]], ice: 2, d: 'Coconut, matcha and a soft cloud on top. Light, a little tropical, very dreamy.', t: ['Coconut', 'Cloud foam'] },
-  { n: 'White Champaca Matcha', l: [['#FAF5E4', .55], ['#A3C06C', .45]], ice: 2, d: 'Matcha with floral white champaca notes over milk. Soft and fragrant.', t: ['Floral', 'Iced'] },
-  { n: 'Coconut Matcha Cold Foam', l: [['#F4F1EA', .45], ['#6E9B3E', .35], ['#FBFAF5', .2]], ice: 2, d: 'Coconut base, matcha middle, cold foam top. Three layers, one sip.', t: ['Coconut', 'Cold foam'] },
-  { n: 'Jasmine Matcha', l: [['#EEF0DA', .5], ['#7FA650', .5]], ice: 2, d: 'Jasmine-scented matcha over milk. Floral, calm and a little bit fancy.', t: ['Floral', 'Calm'] },
-  { n: 'Apple Matcha Cold Foam', l: [['#F1C4CB', .5], ['#7FA650', .3], ['#FBF6F2', .2]], ice: 2, d: 'A pink apple base under bright matcha and silky cold foam. Sweet, tart, very pink.', t: ['Fruity', 'Cold foam'] },
-  { n: 'Whipped Vanilla Matcha', l: [['#F4EEDD', .5], ['#8DB25A', .5]], top: 'whip', dust: true, ice: 1, d: 'Vanilla-kissed matcha with whipped cream on top. Basically dessert in a cup.', t: ['Vanilla', 'Whipped'] },
-  { n: 'Lemonade Matcha Fizz', l: [['#F3E08E', .55], ['#5E8E35', .45]], fizz: true, ice: 2, d: 'Lemonade below, matcha above, bubbles all through. Bright, fizzy and made for Texas heat.', t: ['Sparkling', 'Citrus'] }
+  { l: [['#F2EFE6', .55], ['#5E8E35', .45]], ice: 2 },
+  { l: [['#93B661', 1]], top: 'whip', dust: true, ice: 1 },
+  { l: [['#EFE9DE', .42], ['#6B4A2E', .24], ['#A9C46E', .34]], dust: true, ice: 2 },
+  { l: [['#F7F5EF', .5], ['#7FA650', .3], ['#FFFFFF', .2]], ice: 2 },
+  { l: [['#FAF5E4', .55], ['#A3C06C', .45]], ice: 2 },
+  { l: [['#F4F1EA', .45], ['#6E9B3E', .35], ['#FBFAF5', .2]], ice: 2 },
+  { l: [['#EEF0DA', .5], ['#7FA650', .5]], ice: 2 },
+  { l: [['#F1C4CB', .5], ['#7FA650', .3], ['#FBF6F2', .2]], ice: 2 },
+  { l: [['#F4EEDD', .5], ['#8DB25A', .5]], top: 'whip', dust: true, ice: 1 },
+  { l: [['#F3E08E', .55], ['#5E8E35', .45]], fizz: true, ice: 2 }
 ];
 const shelf = $('[data-drinks]'), dd = $('[data-drink-detail]');
+let drinkIdx = 0;
 DRINKS.forEach((dr, i) => {
   const b = document.createElement('button');
   b.className = 'drink' + (i === 0 ? ' is-active' : '');
-  b.setAttribute('aria-label', dr.n);
-  b.innerHTML = cupSVG({ layers: dr.l.map(([c, h]) => ({ c, h })), top: dr.top, dust: dr.dust, fizz: dr.fizz, ice: dr.ice }) + `<span>${dr.n}</span>`;
-  b.addEventListener('click', () => selectDrink(i, b));
-  b.addEventListener('pointerenter', () => fine && selectDrink(i, b));
+  b.innerHTML = cupSVG({ layers: dr.l.map(([c, h]) => ({ c, h })), top: dr.top, dust: dr.dust, fizz: dr.fizz, ice: dr.ice }) + '<span></span>';
+  b.addEventListener('click', () => selectDrink(i));
+  b.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') selectDrink(i); });
   shelf.appendChild(b);
 });
-function selectDrink(i, b) {
-  const dr = DRINKS[i];
-  if ($('[data-dd-name]').textContent === dr.n) return;
-  $$('.drink', shelf).forEach(x => x.classList.toggle('is-active', x === b));
+function renderDrinkDetail(animate) {
+  const dr = t('drinks')[drinkIdx];
   $('[data-dd-name]').textContent = dr.n;
   $('[data-dd-desc]').textContent = dr.d;
-  $('[data-dd-tags]').innerHTML = dr.t.map(t => `<span class="chip">${t}</span>`).join('');
-  dd.classList.remove('swap'); void dd.offsetWidth; dd.classList.add('swap');
+  const tags = $('[data-dd-tags]'); tags.textContent = '';
+  dr.t.forEach(x => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = x; tags.appendChild(s); });
+  if (animate) { dd.classList.remove('swap'); void dd.offsetWidth; dd.classList.add('swap'); }
 }
-$('[data-dd-desc]').textContent = DRINKS[0].d;
-$('[data-dd-tags]').innerHTML = DRINKS[0].t.map(t => `<span class="chip">${t}</span>`).join('');
+function selectDrink(i) {
+  if (i === drinkIdx) return;
+  drinkIdx = i;
+  $$('.drink', shelf).forEach((x, j) => x.classList.toggle('is-active', j === i));
+  renderDrinkDetail(true);
+}
+function renderDrinkNames() {
+  const names = t('drinks');
+  $$('.drink', shelf).forEach((b, i) => { b.querySelector('span').textContent = names[i].n; b.setAttribute('aria-label', names[i].n); });
+  renderDrinkDetail(false);
+}
+onLang.push(renderDrinkNames);
 
 /* ---------------- Build your cup ---------------- */
 const OPTS = {
-  base: [
-    { k: 'ceremonial', n: 'Ceremonial', c: '#5E8E35' },
-    { k: 'jasmine', n: 'Jasmine', c: '#7FA650' },
-    { k: 'champaca', n: 'White Champaca', c: '#A3C06C' },
-    { k: 'dirty', n: 'Dirty (+ espresso)', c: '#6B4A2E' }
-  ],
-  milk: [
-    { k: 'oat', n: 'Oat', c: '#EADFC8' },
-    { k: 'whole', n: 'Whole milk', c: '#F6F3EA' },
-    { k: 'coconut', n: 'Coconut', c: '#FBFAF5' },
-    { k: 'apple', n: 'Apple', c: '#F1C4CB' },
-    { k: 'lemonade', n: 'Lemonade', c: '#F3E08E' }
-  ],
-  top: [
-    { k: 'none', n: 'Keep it clean', c: 'transparent' },
-    { k: 'foam', n: 'Cold foam', c: '#FBF8F1' },
-    { k: 'whip', n: 'Whipped cream', c: '#FFFDF7' },
-    { k: 'gm', n: 'Matcha gelato scoop', c: '#93B85A' },
-    { k: 'gv', n: 'Vanilla gelato scoop', c: '#F5EEDC' }
-  ]
+  base: [{ k: 'ceremonial', c: '#5E8E35' }, { k: 'jasmine', c: '#7FA650' }, { k: 'champaca', c: '#A3C06C' }, { k: 'dirty', c: '#6B4A2E' }],
+  milk: [{ k: 'oat', c: '#EADFC8' }, { k: 'whole', c: '#F6F3EA' }, { k: 'coconut', c: '#FBFAF5' }, { k: 'apple', c: '#F1C4CB' }, { k: 'lemonade', c: '#F3E08E' }],
+  top: [{ k: 'none', c: 'transparent' }, { k: 'foam', c: '#FBF8F1' }, { k: 'whip', c: '#FFFDF7' }, { k: 'gm', c: '#93B85A' }, { k: 'gv', c: '#F5EEDC' }]
 };
 const state = { base: 'ceremonial', milk: 'oat', top: 'gm', sweet: 50, ice: 2 };
-const NAMES = ['Zen Mode', 'Soft Launch', 'Green Flag', 'Main Character', 'Touch Grass', 'Slow Morning', 'Cloud Nine', 'Little Treat', 'Ritual Era', 'Calm Chaos', 'Matcha Moment', 'Quiet Luxury', 'Big Green Energy', 'Sip Happens', 'Whisk Taker', 'Gelato Glow'];
-const ICE = ['No ice', 'Light', 'Regular'];
 $$('.opt').forEach(fs => {
   const key = fs.dataset.opt, row = $('.opt-row', fs);
   OPTS[key].forEach(o => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'opt-btn'; b.dataset.k = o.k;
-    b.innerHTML = `<i style="background:${o.c};${o.c === 'transparent' ? 'box-shadow:inset 0 0 0 2px rgba(244,241,234,.5)' : ''}"></i>${o.n}`;
+    b.innerHTML = `<i style="background:${o.c};${o.c === 'transparent' ? 'box-shadow:inset 0 0 0 2px rgba(244,241,234,.5)' : ''}"></i><span></span>`;
     b.addEventListener('click', () => { state[key] = o.k; renderBuild(true); });
     row.appendChild(b);
   });
 });
+function renderOptLabels() {
+  const names = t('opts');
+  $$('.opt').forEach(fs => $$('.opt-btn', fs).forEach((b, i) => { b.querySelector('span').textContent = names[fs.dataset.opt][i]; }));
+}
 $$('[data-range]').forEach(r => r.addEventListener('input', () => { state[r.dataset.range] = +r.value; renderBuild(true); }));
+const idx = (key) => OPTS[key].findIndex(o => o.k === state[key]);
 function buildSpec() {
-  const base = OPTS.base.find(o => o.k === state.base), milk = OPTS.milk.find(o => o.k === state.milk), top = OPTS.top.find(o => o.k === state.top);
+  const base = OPTS.base[idx('base')], milk = OPTS.milk[idx('milk')], top = OPTS.top[idx('top')];
   const layers = [{ c: milk.c, h: .5 }];
   if (base.k === 'dirty') { layers.push({ c: '#6B4A2E', h: .2 }); layers.push({ c: '#5E8E35', h: .3 }); }
   else layers.push({ c: base.c, h: .5 });
   if (top.k === 'foam') { layers[layers.length - 1].h -= .2; layers.push({ c: top.c, h: .2 }); }
-  return {
-    base, milk, top,
-    cup: { layers, ice: state.ice, top: top.k === 'whip' ? 'whip' : top.k.startsWith('g') ? 'gelato' : 'none', topColor: top.c, dust: top.k === 'whip', fizz: milk.k === 'lemonade' }
-  };
+  return { layers, ice: state.ice, top: top.k === 'whip' ? 'whip' : top.k.startsWith('g') ? 'gelato' : 'none', topColor: top.c, dust: top.k === 'whip', fizz: milk.k === 'lemonade' };
 }
 function buildName() {
   const key = state.base + state.milk + state.top + state.sweet + state.ice;
   let h = 0; for (const c of key) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-  return NAMES[h % NAMES.length];
+  const names = t('names');
+  return names[h % names.length];
 }
-function buildDesc(sp) {
-  const ice = state.ice === 0 ? '' : 'Iced ';
-  const base = sp.base.k === 'dirty' ? 'Dirty Matcha' : sp.base.n + ' Matcha';
-  const topTxt = sp.top.k === 'none' ? '' : ' + ' + sp.top.n.toLowerCase();
-  return `${ice}${base} on ${sp.milk.n.toLowerCase()}${topTxt} · ${state.sweet}% sweet · ${ICE[state.ice].toLowerCase()}`;
+function buildDesc() {
+  const o = t('opts');
+  const parts = [t('baseName')[idx('base')], o.milk[idx('milk')]];
+  if (state.top !== 'none') parts.push(o.top[idx('top')]);
+  parts.push(`${t('sweet')} ${state.sweet}%`, t('ice')[state.ice]);
+  return parts.join(' · ');
 }
 const cupBox = $('[data-build-cup]');
 function renderBuild(animate) {
-  const sp = buildSpec();
-  cupBox.innerHTML = cupSVG({ ...sp.cup, w: 300 });
+  cupBox.innerHTML = cupSVG({ ...buildSpec(), w: 300 });
   $$('.opt').forEach(fs => $$('.opt-btn', fs).forEach(b => b.setAttribute('aria-pressed', b.dataset.k === state[fs.dataset.opt])));
   $('[data-build-title]').textContent = buildName();
-  $('[data-build-desc]').textContent = buildDesc(sp);
+  $('[data-build-desc]').textContent = buildDesc();
   $('[data-out="sweet"]').textContent = state.sweet + '%';
-  $('[data-out="ice"]').textContent = ICE[state.ice];
+  $('[data-out="ice"]').textContent = t('ice')[state.ice];
   $('[data-range="sweet"]').value = state.sweet; $('[data-range="ice"]').value = state.ice;
   if (animate && !reduce) { cupBox.classList.remove('pop'); void cupBox.offsetWidth; cupBox.classList.add('pop'); }
 }
-renderBuild(false);
-$('[data-shuffle]').addEventListener('click', e => {
+onLang.push(() => { renderOptLabels(); renderBuild(false); });
+$('[data-shuffle]').addEventListener('click', () => {
   const pick = a => a[Math.floor(Math.random() * a.length)].k;
   state.base = pick(OPTS.base); state.milk = pick(OPTS.milk); state.top = pick(OPTS.top);
   state.sweet = [0, 25, 50, 75, 100][Math.floor(Math.random() * 5)]; state.ice = Math.floor(Math.random() * 3);
@@ -426,20 +507,20 @@ $('[data-save]').addEventListener('click', async () => {
     x.fillStyle = g; x.fillRect(0, 0, W, H);
     x.fillStyle = 'rgba(201,222,126,.25)'; x.beginPath(); x.arc(W / 2, 600, 380, 0, Math.PI * 2); x.fill();
     const toImg = svg => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); });
-    const sp = buildSpec();
-    const cupImg = await toImg(cupSVG({ ...sp.cup, w: 420 }).replace('<svg ', '<svg height="690" '));
+    const cupImg = await toImg(cupSVG({ ...buildSpec(), w: 420 }).replace('<svg ', '<svg height="690" '));
     x.drawImage(cupImg, W / 2 - 210, 230, 420, 690);
     const lg = logoSVG();
-    const logoImg = await toImg(lg.svg.replace('<svg ', `<svg width="${lg.w}" height="100" style="color:#F4F1EA" `).replace(/currentColor/g, '#F4F1EA'));
+    const logoImg = await toImg(lg.svg.replace('<svg ', `<svg width="${lg.w}" height="100" `).replace(/currentColor/g, '#F4F1EA'));
     const lw = 560, lh = lw * 100 / lg.w; x.drawImage(logoImg, W / 2 - lw / 2, 90, lw, lh);
+    const F = "Figtree, 'Noto Sans SC', sans-serif";
     x.textAlign = 'center'; x.fillStyle = '#C9DE7E';
-    x.font = '800 30px Figtree, sans-serif'; x.fillText('MY RITUAL', W / 2, 1010);
-    x.fillStyle = '#F4F1EA'; x.font = '900 84px Figtree, sans-serif'; x.fillText(buildName().toUpperCase(), W / 2, 1100);
-    x.font = '500 32px Figtree, sans-serif'; x.globalAlpha = .85; x.fillText(buildDesc(sp), W / 2, 1160); x.globalAlpha = 1;
-    x.fillStyle = '#C9DE7E'; x.font = '800 26px Figtree, sans-serif'; x.fillText('OPENING DEC 10, 2026 · HOUSTON, TX · @MATCHAZENHOUSE', W / 2, 1270);
+    x.font = `800 30px ${F}`; x.fillText(t('img.my'), W / 2, 1010);
+    x.fillStyle = '#F4F1EA'; x.font = `900 84px ${F}`; x.fillText(buildName().toUpperCase(), W / 2, 1100);
+    x.font = `500 30px ${F}`; x.globalAlpha = .85; x.fillText(buildDesc(), W / 2, 1160, W - 80); x.globalAlpha = 1;
+    x.fillStyle = '#C9DE7E'; x.font = `800 26px ${F}`; x.fillText(t('img.foot'), W / 2, 1270, W - 80);
     const a = document.createElement('a'); a.download = 'my-matcha-zen-ritual.png'; a.href = c.toDataURL('image/png'); a.click();
-    toast('Saved! Show it to us on opening day 💚');
-  } catch (err) { console.error(err); toast('Could not save the image on this browser. Try a screenshot!'); }
+    toast(t('toast.saved'));
+  } catch (err) { console.error(err); toast(t('toast.saveFail')); }
 });
 
 /* ---------------- Whisk mini-game ---------------- */
@@ -450,34 +531,28 @@ $('[data-save]').addEventListener('click', async () => {
   let froth = 0, down = false, px = C, py = C, wx = C + 120, wy = C + 60, lastDx = 0, done = false, visible = false, raf = 0;
   const foam = [];
   const specks = Array.from({ length: 420 }, () => { const a = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * (R - 6); return [C + Math.cos(a) * r, C + Math.sin(a) * r, .6 + Math.random() * 2.2]; });
-  const MSG = [[0, 'Start whisking →'], [.15, 'Nice wrist.'], [.4, 'Getting frothy…'], [.7, 'Almost zen…'], [.92, 'So close!']];
-  function mix(a, b, t) { const pa = a.match(/\w\w/g).map(h => parseInt(h, 16)), pb = b.match(/\w\w/g).map(h => parseInt(h, 16)); return `rgb(${pa.map((v, i) => Math.round(lerp(v, pb[i], t))).join(',')})`; }
+  const STEPS = [0, .15, .4, .7, .92];
+  function mix(a, b, k) { const pa = a.match(/\w\w/g).map(h => parseInt(h, 16)), pb = b.match(/\w\w/g).map(h => parseInt(h, 16)); return `rgb(${pa.map((v, i) => Math.round(lerp(v, pb[i], k))).join(',')})`; }
   function draw() {
     x.clearRect(0, 0, W, W);
-    // bowl
     let g = x.createRadialGradient(C - 60, C - 80, 40, C, C, 270);
     g.addColorStop(0, '#3a3a38'); g.addColorStop(1, '#121211');
     x.fillStyle = g; x.beginPath(); x.arc(C, C, 262, 0, Math.PI * 2); x.fill();
     x.strokeStyle = 'rgba(255,255,255,.12)'; x.lineWidth = 3; x.beginPath(); x.arc(C, C, 252, 0, Math.PI * 2); x.stroke();
-    // matcha
     const f = clamp(froth, 0, 1);
     g = x.createRadialGradient(C - 40, C - 50, 20, C, C, R);
     g.addColorStop(0, mix('4E7F2C', 'C4DC8A', f)); g.addColorStop(1, mix('2F5A1C', '9DBE62', f));
     x.fillStyle = g; x.beginPath(); x.arc(C, C, R, 0, Math.PI * 2); x.fill();
-    // micro-foam specks grow with froth
     x.fillStyle = `rgba(236,244,206,${.15 + f * .6})`;
     const n = Math.floor(specks.length * f);
     for (let i = 0; i < n; i++) { const s = specks[i]; x.beginPath(); x.arc(s[0], s[1], s[2], 0, Math.PI * 2); x.fill(); }
-    // fresh bubbles
     for (let i = foam.length - 1; i >= 0; i--) {
       const b = foam[i]; b.life -= .012;
       if (b.life <= 0) { foam.splice(i, 1); continue; }
       x.strokeStyle = `rgba(245,250,225,${b.life * .8})`; x.lineWidth = 1.2;
       x.beginPath(); x.arc(b.x, b.y, b.r, 0, Math.PI * 2); x.stroke();
     }
-    // rim shine
     x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 8; x.beginPath(); x.arc(C, C, R + 4, 0, Math.PI * 2); x.stroke();
-    // whisk (top-down chasen)
     wx = lerp(wx, down ? px : wx, .5); wy = lerp(wy, down ? py : wy, .5);
     x.save(); x.translate(wx, wy);
     for (let i = 0; i < 40; i++) { const a = i / 40 * Math.PI * 2; x.strokeStyle = i % 2 ? '#C9A86A' : '#B8945A'; x.lineWidth = 2; x.beginPath(); x.moveTo(Math.cos(a) * 10, Math.sin(a) * 10); x.lineTo(Math.cos(a) * 38, Math.sin(a) * 38); x.stroke(); }
@@ -493,8 +568,7 @@ $('[data-save]').addEventListener('click', async () => {
     if (!down) return;
     const [nx, ny] = pos(e);
     const dx = nx - px, dy = ny - py; px = nx; py = ny;
-    const inBowl = Math.hypot(px - C, py - C) < R;
-    if (!inBowl || done) return;
+    if (Math.hypot(px - C, py - C) >= R || done) return;
     const sp = Math.min(Math.hypot(dx, dy), 50);
     const flip = Math.sign(dx) !== Math.sign(lastDx) && Math.abs(dx) > 2;
     if (Math.abs(dx) > 2) lastDx = dx;
@@ -502,27 +576,34 @@ $('[data-save]').addEventListener('click', async () => {
     if (Math.random() < .7) foam.push({ x: px + (Math.random() - .5) * 50, y: py + (Math.random() - .5) * 50, r: 2 + Math.random() * 5, life: 1 });
     update();
   });
-  function update() {
-    const f = clamp(froth, 0, 1), p = Math.round(f * 100);
+  function update(fromLang) {
+    const f = clamp(froth, 0, 1), p = Math.round(f * 100), M = t('whiskMsg');
     meterEl.style.width = p + '%'; pctEl.textContent = p + '%';
-    if (f >= 1 && !done) {
-      done = true; msgEl.textContent = "Perfect froth. That's the Ritual of Cha.";
-      const r = cv.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 90); toast('You whisked it! 🍵 See you December 10.');
-    } else if (!done) { msgEl.textContent = MSG.filter(m => f >= m[0]).pop()[1]; }
+    if (f >= 1) {
+      msgEl.textContent = M[5];
+      if (!done && !fromLang) {
+        done = true;
+        const r = cv.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 90); toast(t('toast.whisk'));
+      }
+    } else {
+      let k = 0; STEPS.forEach((s, i) => { if (f >= s) k = i; });
+      msgEl.textContent = M[k];
+    }
   }
   $('[data-whisk-reset]').addEventListener('click', () => { froth = 0; done = false; foam.length = 0; hint.style.opacity = 1; update(); });
   new IntersectionObserver(([en]) => { visible = en.isIntersecting; cancelAnimationFrame(raf); if (visible) raf = requestAnimationFrame(draw); }).observe(cv);
+  onLang.push(() => update(true));
   draw();
 })();
 
 /* ---------------- Gelato cake picker ---------------- */
 const CAKES = [
-  { n: 'Matcha', c: '#8FA544', bg: 'assets/img/texture.jpg', d: 'Velvet matcha shell, matcha gelato center, cocoa crumb base. The core classic.' },
-  { n: 'Ocean', c: '#2D78BE', bg: 'assets/img/tex-blue.jpg', d: 'Bold blue velvet over a matcha gelato heart. The one everyone photographs.' },
-  { n: 'Guava', c: '#E07463', bg: 'assets/img/tex-guava.jpg', d: 'Seasonal pink guava velvet. Bright, tropical and made for birthdays.' },
-  { n: 'Citrus', c: '#F2A31B', bg: 'assets/img/tex-orange.jpg', d: 'Seasonal sunny citrus velvet for celebrations that need a little glow.' },
-  { n: 'Cocoa', c: '#6A3E2B', bg: 'assets/img/tex-choc.jpg', d: 'Deep chocolate velvet. Rich, moody and very giftable.' },
-  { n: 'Ruby', c: '#BE2830', bg: 'assets/img/tex-guava.jpg', d: 'Ruby red velvet finish. For the big days and the big reveals.' }
+  { c: '#8FA544', bg: 'assets/img/texture.jpg' },
+  { c: '#2D78BE', bg: 'assets/img/tex-blue.jpg' },
+  { c: '#E07463', bg: 'assets/img/tex-guava.jpg' },
+  { c: '#F2A31B', bg: 'assets/img/tex-orange.jpg' },
+  { c: '#6A3E2B', bg: 'assets/img/tex-choc.jpg' },
+  { c: '#BE2830', bg: 'assets/img/tex-guava.jpg' }
 ];
 function cakeSVG(color) {
   const lg = logoSVG();
@@ -547,50 +628,26 @@ function cakeSVG(color) {
   </svg>`;
 }
 const cakeEl = $('[data-cake]'), cakeBg = $('[data-cake-bg]'), swWrap = $('[data-swatches]');
+let cakeIdx = 0;
 CAKES.forEach((ck, i) => {
   const b = document.createElement('button');
-  b.className = 'swatch'; b.style.background = ck.c; b.setAttribute('role', 'radio'); b.setAttribute('aria-label', ck.n); b.setAttribute('aria-checked', i === 0);
-  b.addEventListener('click', () => setCake(i));
+  b.className = 'swatch'; b.style.background = ck.c; b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', i === 0);
+  b.addEventListener('click', () => setCake(i, true));
   swWrap.appendChild(b);
   const pre = new Image(); pre.src = ck.bg;
 });
-function setCake(i) {
-  const ck = CAKES[i];
-  $$('.swatch', swWrap).forEach((s, j) => s.setAttribute('aria-checked', i === j));
+function setCake(i, animate) {
+  cakeIdx = i;
+  const ck = CAKES[i], txt = t('cakes')[i];
+  $$('.swatch', swWrap).forEach((s, j) => { s.setAttribute('aria-checked', i === j); s.setAttribute('aria-label', t('cakes')[j].n); });
   $$('.cake-body', cakeEl).forEach(p => p.setAttribute('fill', ck.c));
-  $('[data-cake-name]').textContent = ck.n;
-  $('[data-cake-desc]').textContent = ck.d;
+  $('[data-cake-name]').textContent = txt.n;
+  $('[data-cake-desc]').textContent = txt.d;
   cakeBg.style.backgroundImage = `url(${ck.bg})`;
-  if (!reduce) { cakeEl.classList.remove('bounce'); void cakeEl.offsetWidth; cakeEl.classList.add('bounce'); }
+  if (animate && !reduce) { cakeEl.classList.remove('bounce'); void cakeEl.offsetWidth; cakeEl.classList.add('bounce'); }
 }
 cakeEl.innerHTML = cakeSVG(CAKES[0].c);
-setCake(0);
-
-/* ---------------- DNA accordion ---------------- */
-const dnaCards = $$('.dna-card');
-dnaCards.forEach(c => {
-  const open = () => dnaCards.forEach(x => x.classList.toggle('is-open', x === c));
-  c.addEventListener('click', open); c.addEventListener('focus', open);
-  if (fine) c.addEventListener('pointerenter', open);
-});
-
-/* ---------------- Horizontal scroll section ---------------- */
-const hsSec = $('.visit-steps'), hsTrack = $('[data-hs]'), hsBar = $('[data-hs-bar]');
-let hsDist = 0;
-function sizeHS() {
-  hsDist = Math.max(0, hsTrack.scrollWidth - innerWidth);
-  hsSec.style.height = (innerHeight + hsDist) + 'px';
-  onScrollHS();
-}
-function onScrollHS() {
-  const r = hsSec.getBoundingClientRect();
-  const p = clamp(-r.top / Math.max(1, hsDist), 0, 1);
-  hsTrack.style.transform = `translate3d(${-p * hsDist}px,0,0)`;
-  hsBar.style.transform = `scaleX(${p})`;
-}
-addEventListener('resize', sizeHS);
-addEventListener('load', sizeHS);
-sizeHS();
+onLang.push(() => setCake(cakeIdx, false));
 
 /* ---------------- Add to calendar (.ics) ---------------- */
 $('[data-ics]').addEventListener('click', () => {
@@ -605,8 +662,39 @@ $('[data-ics]').addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
   a.download = 'matcha-zen-opening.ics'; a.click();
-  toast('Reminder saved for December 10 🍵');
+  toast(t('toast.cal'));
 });
 
+/* ---------------- Apply language ---------------- */
+const langBtns = $$('.lang button'), langInk = $('.lang-ink');
+function moveLangInk() {
+  const b = $(`.lang button[data-lang="${LANG}"]`);
+  if (!b || !b.offsetWidth) return;
+  langInk.style.width = b.offsetWidth + 'px';
+  langInk.style.transform = `translateX(${b.offsetLeft}px)`;
+}
+function applyLang(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh' : lang;
+  const dict = D[lang] || {};
+  $$('[data-i18n]').forEach(el => {
+    if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
+    const v = lang === 'en' ? el.dataset.en : dict[el.dataset.i18n];
+    el.innerHTML = v !== undefined ? v : el.dataset.en;
+  });
+  document.title = t('meta.title');
+  splitHouseTitle();
+  langBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+  moveLangInk();
+  onLang.forEach(fn => fn());
+  try { localStorage.setItem('mz-lang', lang); } catch (e) {}
+  const u = new URL(location.href);
+  if (u.searchParams.has('lang')) { u.searchParams.set('lang', lang); history.replaceState(null, '', u); }
+}
+langBtns.forEach(b => b.addEventListener('click', () => { if (b.dataset.lang !== LANG) applyLang(b.dataset.lang); }));
+addEventListener('resize', moveLangInk);
+document.fonts && document.fonts.ready.then(() => { moveLangInk(); moveInk($('.tab.is-active')); });
+
+applyLang(LANG);
 onScrollNav();
 })();
