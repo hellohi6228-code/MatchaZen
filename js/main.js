@@ -4,9 +4,9 @@
 (() => {
 'use strict';
 
-// Opening target. The deck says "Coming soon: Houston, TX" and the launch is December 2026.
+// Opening target. The deck says "Coming soon: Houston, TX" and the opening day is December 10, 2026 (Houston time).
 // Change this one line when the exact opening day is set.
-const OPEN_DATE = new Date('2026-12-01T00:00:00-06:00');
+const OPEN_DATE = new Date('2026-12-10T00:00:00-06:00');
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -55,7 +55,7 @@ $$('[data-mark]').forEach(el => { el.innerHTML = MARK; });
 /* Favicon-like circular badge text */
 const badge = $('.badge-spin');
 if (badge) {
-  badge.innerHTML = `<svg viewBox="0 0 150 150"><defs><path id="bc" d="M75 75 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs><text fill="#F4F1EA" font-family="Figtree, sans-serif" font-weight="800" font-size="13.2" letter-spacing="3.2"><textPath href="#bc">COMING SOON ▲ HOUSTON TX ▲ DEC 2026 ▲</textPath></text></svg>`;
+  badge.innerHTML = `<svg viewBox="0 0 150 150"><defs><path id="bc" d="M75 75 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0"/></defs><text fill="#F4F1EA" font-family="Figtree, sans-serif" font-weight="800" font-size="13.2" letter-spacing="3.2"><textPath href="#bc">COMING SOON ▲ HOUSTON TX ▲ DEC 10 ▲</textPath></text></svg>`;
 }
 
 /* ---------------- Toast + confetti ---------------- */
@@ -161,7 +161,7 @@ function tickCountdown() {
       prev[ci + k] = txt;
     }
   }));
-  if (OPEN_DATE - Date.now() <= 0) $$('.cd-label').forEach(l => l.textContent = "It's December. Doors open any day now.");
+  if (OPEN_DATE - Date.now() <= 0) $$('.cd-label').forEach(l => l.textContent = "We're open! Come see us in Houston.");
 }
 tickCountdown(); setInterval(tickCountdown, 1000);
 
@@ -436,7 +436,7 @@ $('[data-save]').addEventListener('click', async () => {
     x.font = '800 30px Figtree, sans-serif'; x.fillText('MY RITUAL', W / 2, 1010);
     x.fillStyle = '#F4F1EA'; x.font = '900 84px Figtree, sans-serif'; x.fillText(buildName().toUpperCase(), W / 2, 1100);
     x.font = '500 32px Figtree, sans-serif'; x.globalAlpha = .85; x.fillText(buildDesc(sp), W / 2, 1160); x.globalAlpha = 1;
-    x.fillStyle = '#C9DE7E'; x.font = '800 26px Figtree, sans-serif'; x.fillText('OPENING DECEMBER 2026 · HOUSTON, TX · @MATCHAZENHOUSE', W / 2, 1270);
+    x.fillStyle = '#C9DE7E'; x.font = '800 26px Figtree, sans-serif'; x.fillText('OPENING DEC 10, 2026 · HOUSTON, TX · @MATCHAZENHOUSE', W / 2, 1270);
     const a = document.createElement('a'); a.download = 'my-matcha-zen-ritual.png'; a.href = c.toDataURL('image/png'); a.click();
     toast('Saved! Show it to us on opening day 💚');
   } catch (err) { console.error(err); toast('Could not save the image on this browser. Try a screenshot!'); }
@@ -507,7 +507,7 @@ $('[data-save]').addEventListener('click', async () => {
     meterEl.style.width = p + '%'; pctEl.textContent = p + '%';
     if (f >= 1 && !done) {
       done = true; msgEl.textContent = "Perfect froth. That's the Ritual of Cha.";
-      const r = cv.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 90); toast('You whisked it! 🍵 See you in December.');
+      const r = cv.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 90); toast('You whisked it! 🍵 See you December 10.');
     } else if (!done) { msgEl.textContent = MSG.filter(m => f >= m[0]).pop()[1]; }
   }
   $('[data-whisk-reset]').addEventListener('click', () => { froth = 0; done = false; foam.length = 0; hint.style.opacity = 1; update(); });
@@ -597,15 +597,15 @@ $('[data-ics]').addEventListener('click', () => {
   const ics = [
     'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Matcha Zen//Opening//EN', 'BEGIN:VEVENT',
     'UID:matchazen-opening-2026@matchazen', 'DTSTAMP:20261101T000000Z',
-    'DTSTART;VALUE=DATE:20261201', 'DTEND;VALUE=DATE:20261202',
-    'SUMMARY:Matcha Zen opens this December (Houston\\, TX)',
-    'DESCRIPTION:Our first matcha ritual house opens in Houston this December. Follow @matchazenhouse on Instagram for the exact day.',
+    'DTSTART;VALUE=DATE:20261210', 'DTEND;VALUE=DATE:20261211',
+    'SUMMARY:Matcha Zen opening day (Houston\\, TX)',
+    'DESCRIPTION:Our first matcha ritual house opens in Houston on December 10. Follow @matchazenhouse on Instagram for the address and any updates.',
     'LOCATION:Houston\\, TX', 'END:VEVENT', 'END:VCALENDAR'
   ].join('\r\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
   a.download = 'matcha-zen-opening.ics'; a.click();
-  toast('Reminder saved for December 1 🍵');
+  toast('Reminder saved for December 10 🍵');
 });
 
 onScrollNav();
