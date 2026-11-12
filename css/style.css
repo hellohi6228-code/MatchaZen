@@ -502,9 +502,9 @@ html[lang="zh"] .eyebrow { letter-spacing: .1em; }
 .house-cats button:hover b { color: var(--matcha); }
 .house-cats button:hover i { transform: translateX(6px); }
 
-.house-stage { position: relative; display: flex; flex-direction: column; align-items: center; }
+.house-stage { position: relative; display: flex; flex-direction: column; align-items: center; margin: 0 auto; }
 .house-photo {
-  position: relative; width: min(500px, 100%); border-radius: 28px; cursor: pointer; user-select: none;
+  position: relative; width: min(640px, 100%); border-radius: 28px; cursor: pointer; user-select: none;
   transform-style: preserve-3d; transition: transform .3s ease-out; touch-action: manipulation;
 }
 .house-photo img { width: 100%; border-radius: 28px; aspect-ratio: 880/1100; object-fit: cover; box-shadow: 0 50px 80px -40px rgba(0,30,70,.7); border: 6px solid rgba(255,255,255,.9); }
@@ -570,3 +570,17 @@ html[lang="zh"] .eyebrow { letter-spacing: .1em; }
 .lang button { white-space: nowrap; }
 @media (max-width: 900px) { .house-stage { order: -1; } }
 @media (max-width: 480px) { .lang { padding: 3px; } .lang button { padding: 7px 8px; min-width: 0; font-size: 11px; } .nav-right { gap: 6px; } .nav-burger { width: 40px; height: 40px; } .nav-burger span { left: 12px; right: 12px; } .nav-burger span:first-child { top: 16px; } .nav-burger span:last-child { top: 23px; } }
+
+/* sky section: centered photo */
+.house-photo .hot { width: 54px; height: 54px; margin: -27px 0 0 -27px; font-size: 30px; }
+@media (max-width: 600px) { .house-photo .hot { width: 44px; height: 44px; margin: -22px 0 0 -22px; font-size: 24px; } .house-photo img { border-width: 4px; } }
+
+/* tag section: words only */
+.tag-grid { grid-template-columns: 1fr; }
+.tag-copy { max-width: 900px; }
+.tag-copy .h-xl { font-size: clamp(52px, 9vw, 130px); line-height: .95; }
+html[lang="zh"] .tag-copy .h-xl { line-height: 1.08; }
+.tag-copy .lead { max-width: 40em; }
+
+/* Chinese headings: break only at <br> */
+html[lang="zh"] h1, html[lang="zh"] h2, html[lang="zh"] h3 { word-break: keep-all; }
