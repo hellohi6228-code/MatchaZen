@@ -232,7 +232,8 @@ async function loadTagged() {
     if (!res.ok) return [];
     const data = await res.json();
     const posts = Array.isArray(data) ? data : (data.posts || []);
-    return posts.filter(p => p && /^https:\/\//.test(p.image || '') && (!p.url || /^https:\/\//.test(p.url))).slice(0, 24);
+    const okImg = s => /^https:\/\//.test(s) || /^assets\/tagged\/\d+\.jpg$/.test(s);
+    return posts.filter(p => p && okImg(p.image || '') && (!p.url || /^https:\/\//.test(p.url))).slice(0, 24);
   } catch (e) { return []; }
 }
 (async () => {
